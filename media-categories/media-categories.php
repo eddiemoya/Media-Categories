@@ -52,7 +52,6 @@ class Media_Categories {
     /**
      * Here I insert a custom form field into the media editor, but instead of
      * a normal textfield, I capture the output of a custom metabox and insert it.
-
      */
     function add_media_categories_metabox($form_fields, $post) {
 
