@@ -1,0 +1,11 @@
+.media-upload-form .category-tabs, 
+.media-upload-form tr.category,
+.media-upload-form #category-adder{
+    display:none;
+}
+
+.media-upload-form .category-filter {
+    font-size: 12px;
+    font-style: italic;
+    font-family: sans-serif;
+}
