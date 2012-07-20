@@ -1,42 +1,66 @@
-<?php
-/*
-  Plugin Name: Media Categories
-  Plugin URI: http://wordpress.org/extend/plugins/media-categories-2
-  Description:  Allows users to assign categories to media with a clean and simplified, filterable category meta box and use shortcodes to display category galleries
-  Version: 1.2
-  Author: Eddie Moya
-  Author URL: http://eddiemoya.com
- */
+<?php /*
+Plugin Name: Media Categories
+Plugin URI: http://wordpress.org/extend/plugins/media-categories-2
+Description:  Allows users to assign categories to media with a clean and simplified, filterable category meta box and use shortcodes to display category galleries
+Version: 1.4.1
+Author: Eddie Moya
+Author URL: http://eddiemoya.com
+*/
 
 class Media_Categories {
 
+    public static $instances;
+    public $taxonomy;
+    
     /**
-     * Start your engines.
-     * 
-     * @author Eddie Moya
+     * While normally run statically, this allows 
+     * @param type $taxonomy 
      */
-    function init() {
-        add_action('init', array(__CLASS__, 'register_media_categories'));
-        add_action('init', array(__CLASS__, 'custom_gallery_shortcode'));
+    public function __construct($taxonomy) {
+        
+        // Store each instance of this class (for use when localizing scripts)
+        $this->taxonomy = $taxonomy;
+        self::$instances[] = $this;
+        
+        add_action('init', array(&$this, 'register_media_categories'));
+        add_action('init', array(&$this, 'custom_gallery_shortcode'));
+        add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
+        
+        /* These only need to occur once */
+        add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
-        add_filter('attachment_fields_to_edit', array(__CLASS__, 'add_media_categories_metabox'), null, 2);
         
+        
+
     }
 
-
+    /**
+     * Enqueue javascript
+     */
     function enqueue_media_categories_scripts() {
         if (is_admin()) {
-
-            wp_register_script('media_categories_metabox_script', WP_PLUGIN_URL . '/media-categories-2/media-categories-script.js');
+            
+            // Get each instance of this class, and pass each taxonomy in to javascript
+            foreach (self::$instances as $instance){
+                $tax[] = apply_filters('mc_taxonomy', $instance->taxonomy);
+            }
+                
+        
+            wp_register_script('media_categories_metabox_script', plugins_url('media-categories-script.js', __FILE__));
             wp_enqueue_script('media_categories_metabox_script');
+            
+            wp_localize_script('media_categories_metabox_script', 'taxonomy',  $tax);
         }
     }
     
+    /**
+     * 
+     */
     function enqueue_media_categories_styles() {
         if (is_admin()) { 
             
-            wp_register_style('media_categories_metabox_style', WP_PLUGIN_URL . '/media-categories-2/media-categories-style.css');
+            wp_register_style('media_categories_metabox_style', plugins_url('media-categories-style.css', __FILE__));
             wp_enqueue_style( 'media_categories_metabox_style');
         }
     }
@@ -47,8 +71,9 @@ class Media_Categories {
      * the user would have to type slugs.
      */
     function register_media_categories() {
-        register_taxonomy_for_object_type('category', 'attachment');
-        add_post_type_support('attachment', 'category');
+        $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
+        
+        register_taxonomy_for_object_type($tax_name, 'attachment');
     }
 
     /**
@@ -58,17 +83,23 @@ class Media_Categories {
     function add_media_categories_metabox($form_fields, $post) {
 
         require_once('./includes/meta-boxes.php');
+        
+        $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
+        $taxonomy = get_taxonomy($tax_name);
 
         ob_start();
-
-        self::media_categories_meta_box($post, array('taxonomy' => 'category'));
-
+        
+            $this->media_categories_meta_box($post, array('args' => array ('taxonomy' => $tax_name, 'tax' => $taxonomy)));
+            
         $metabox = ob_get_clean();
         
-        $form_fields['category_metabox']['label'] = __('Categories');
-        $form_fields['category_metabox']['helps'] = 'Select a catgegory, use the text fields above to filter';
-        $form_fields['category_metabox']['input'] = 'html';
-        $form_fields['category_metabox']['html'] = $metabox;
+        $form_slug = $this->taxonomy . '_metabox';
+            
+        $form_fields[$form_slug]['label'] = $taxonomy->labels->name;
+        $form_fields[$form_slug]['helps'] = sprintf(__('Select a %s, use the text fields above to filter'), strtolower($taxonomy->labels->singular_name));
+        $form_fields[$form_slug]['input'] = 'html';
+        $form_fields[$form_slug]['html'] = $metabox;
+        
         return $form_fields;
     }
 
@@ -85,8 +116,9 @@ class Media_Categories {
     function media_categories_meta_box($post, $box) {
         
         require_once(plugin_dir_path(__FILE__) . 'attachment-walker-category-checklist-class.php');
-          
-        $defaults = array('taxonomy' => 'category');
+             
+        $defaults = array('taxonomy' => apply_filters('mc_taxonomy',$this->taxonomy));
+        
         if (!isset($box['args']) || !is_array($box['args']))
             $args = array();
         else
@@ -94,28 +126,31 @@ class Media_Categories {
         extract(wp_parse_args($args, $defaults), EXTR_SKIP);
         $tax = get_taxonomy($taxonomy);
         ?>
+
         <div>
-            <label class='category-filter' for="category-filter">Search Categories:</label>
-            <input id='catsearch' name="category-filter" type='text' /></div>
-        <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
+            <label class='category-filter' for="category-filter">Search <?php echo $tax->labels->name; ?>:</label>
+            <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' /></div>
+            <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
+
             <ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
                 <li class="tabs"><a href="#<?php echo $taxonomy; ?>-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
                 <li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e('Most Used'); ?></a></li>
             </ul>
 
             <div id="<?php echo $taxonomy; ?>-pop" class="tabs-panel" style="display: none;">
-                <ul id="<?php echo $taxonomy; ?>checklist-pop" class="categorychecklist form-no-clear" >
-        <?php $popular_ids = wp_popular_terms_checklist($taxonomy); ?>
+                <ul id="<?php echo $taxonomy; ?>checklist-pop" class="<?php echo $taxonomy; ?>checklist form-no-clear" >
+                    <?php $popular_ids = wp_popular_terms_checklist($taxonomy); ?>
                 </ul>
             </div>
 
             <div id="<?php echo $taxonomy; ?>-all" class="tabs-panel">
-        <?php
-        $name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
-        echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
-        ?>
-                <ul id="<?php echo $taxonomy; ?>checklist" class="list:<?php echo $taxonomy ?> categorychecklist form-no-clear">
-                <?php $custom_walker = new Attachment_Walker_Category_Checklist ?>
+                <?php
+                $name = ( $taxonomy == 'category' ) ? 'post_category' : 'tax_input[' . $taxonomy . ']';
+                echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
+                ?>
+                
+                <ul id="<?php echo $taxonomy; ?>checklist" class="list:<?php echo $taxonomy ?> <?php echo $taxonomy; ?>checklist form-no-clear">
+                    <?php $custom_walker = new Attachment_Walker_Category_Checklist ?>
                     <?php wp_terms_checklist($post->ID, array('taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $custom_walker)) ?>
                 </ul>
             </div>
@@ -123,27 +158,29 @@ class Media_Categories {
             
         <?php if (current_user_can($tax->cap->edit_terms)) : ?>
             
-                <div id="<?php echo $taxonomy; ?>-adder" class="wp-hidden-children">
-                    <h4>
-                        <a id="<?php echo $taxonomy; ?>-add-toggle" href="#<?php echo $taxonomy; ?>-add" class="hide-if-no-js" tabindex="3">
-            <?php
-            /* translators: %s: add new taxonomy label */
-            printf(__('+ %s'), $tax->labels->add_new_item);
-            ?>
-                        </a>
-                    </h4>
-                    <p id="<?php echo $taxonomy; ?>-add" class="category-add wp-hidden-child">
-                        <label class="screen-reader-text" for="new<?php echo $taxonomy; ?>"><?php echo $tax->labels->add_new_item; ?></label>
-                        <input type="text" name="new<?php echo $taxonomy; ?>" id="new<?php echo $taxonomy; ?>" class="form-required form-input-tip" value="<?php echo esc_attr($tax->labels->new_item_name); ?>" tabindex="3" aria-required="true"/>
-                        <label class="screen-reader-text" for="new<?php echo $taxonomy; ?>_parent">
-            <?php echo $tax->labels->parent_item_colon; ?>
-                        </label>
-                            <?php wp_dropdown_categories(array('taxonomy' => $taxonomy, 'hide_empty' => 0, 'name' => 'new' . $taxonomy . '_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;', 'tab_index' => 3)); ?>
-                        <input type="button" id="<?php echo $taxonomy; ?>-add-submit" class="add:<?php echo $taxonomy ?>checklist:<?php echo $taxonomy ?>-add button category-add-sumbit" value="<?php echo esc_attr($tax->labels->add_new_item); ?>" tabindex="3" />
-                        <?php wp_nonce_field('add-' . $taxonomy, '_ajax_nonce-add-' . $taxonomy, false); ?>
-                        <span id="<?php echo $taxonomy; ?>-ajax-response"></span>
-                    </p>
-                </div>
+             <div id="<?php echo $taxonomy; ?>-adder" class="wp-hidden-children">
+                <h4>
+                    <a id="<?php echo $taxonomy; ?>-add-toggle" href="#<?php echo $taxonomy; ?>-add" class="hide-if-no-js" tabindex="3">
+                        <?php printf(__('+ %s'), $tax->labels->add_new_item);/* translators: %s: add new taxonomy label */ ?> 
+                    </a>
+                </h4>
+                
+                <p id="<?php echo $taxonomy; ?>-add" class="category-add wp-hidden-child">
+                    
+                    <label class="screen-reader-text" for="new<?php echo $taxonomy; ?>"><?php echo $tax->labels->add_new_item; ?></label>
+                    <input type="text" name="new<?php echo $taxonomy; ?>" id="new<?php echo $taxonomy; ?>" class="form-required form-input-tip" value="<?php echo esc_attr($tax->labels->new_item_name); ?>" tabindex="3" aria-required="true"/>
+
+                    <label class="screen-reader-text" for="new<?php echo $taxonomy; ?>_parent">
+                        <?php echo $tax->labels->parent_item_colon; ?>
+                    </label>
+
+                    <?php wp_dropdown_categories(array('taxonomy' => $taxonomy, 'hide_empty' => 0, 'name' => 'new' . $taxonomy . '_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;', 'tab_index' => 3)); ?>
+                    <input type="button" id="<?php echo $taxonomy; ?>-add-submit" class="add:<?php echo $taxonomy ?>checklist:<?php echo $taxonomy ?>-add button category-add-sumbit" value="<?php echo esc_attr($tax->labels->add_new_item); ?>" tabindex="3" />
+
+                    <?php wp_nonce_field('add-' . $taxonomy, '_ajax_nonce-add-' . $taxonomy, false); ?>
+                    <span id="<?php echo $taxonomy; ?>-ajax-response"></span>
+                </p>
+            </div>
         <?php endif; ?>
         </div>
             <?php
@@ -151,7 +188,7 @@ class Media_Categories {
 
     function custom_gallery_shortcode(){
         remove_shortcode('gallery');
-        add_shortcode('gallery', array(__CLASS__,'gallery_shortcode'));
+        add_shortcode('gallery', array(&$this,'gallery_shortcode'));
     }
     
     /**
@@ -187,6 +224,7 @@ class Media_Categories {
                 unset( $attr['orderby'] );
         }
 
+        $mc_tax = apply_filters('mc_taxonomy', $this->taxonomy);
         extract(shortcode_atts(array(
             'order'      => 'ASC',
             'orderby'    => 'menu_order ID',
@@ -198,24 +236,25 @@ class Media_Categories {
             'size'       => 'thumbnail',
             'include'    => '',
             'exclude'    => '',
-            'category'   => ''
+            $mc_tax      => ''   
         ), $attr));
         
         $id = intval($id);
         if ( 'RAND' == $order )
             $orderby = 'none';
-
-        if( !empty($category) ){ 
-            if(!is_numeric($category))
-                $category = get_category_by_slug($category)->term_id;
-
+                
+        if( !empty($$mc_tax) ){ 
+   
+            $term = ${$mc_tax};
+            $term_field = (is_numeric($term)) ? 'id' : 'slug';
+              
             if(!isset($attr['id']))
                 $id = '';
         }
         
         if ( !empty($include) ) {
             $include = preg_replace( '/[^0-9,]+/', '', $include );
-            $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'category' => $category) );
+            $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
 
             $attachments = array();
             foreach ( $_attachments as $key => $val ) {
@@ -223,9 +262,9 @@ class Media_Categories {
             }
         } elseif ( !empty($exclude) ) {
             $exclude = preg_replace( '/[^0-9,]+/', '', $exclude );
-            $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'category' => $category) );
+            $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
         } else {
-            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'category' => $category) );
+            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
         }
 
         if ( empty($attachments) )
@@ -297,6 +336,50 @@ class Media_Categories {
 
         return $output;
     }
+    
+   
+    /**
+     * This function serves to work around the problem explained in trac ticket 20765 and reported
+     * to me in the plugin directory support forum on WordPress.org.
+     * 
+     * It is an exact duplication of code the `get_attachment_fields_to_edit()` function,
+     * and its only purpose is to change the output of terms in attachments so that they used term slugs
+     * rather than names.
+     * 
+     * @linkhttp://core.trac.wordpress.org/ticket/20765
+     * @link http://wordpress.org/support/topic/media-categories-2-not-saving-correctly-when-two-categories-with-same-name
+     * @see /wp-admin/includes/media.php:get_attachemt_fields_to_edit()
+     * 
+     * @param type $form_fields
+     * @param type $post
+     * @return type 
+     */
+    function get_attachment_fields_to_edit($form_fields, $post) {
+
+        foreach (get_attachment_taxonomies($post) as $taxonomy) {
+            $t = (array) get_taxonomy($taxonomy);
+            if (!$t['public'])
+                continue;
+            if (empty($t['label']))
+                $t['label'] = $taxonomy;
+            if (empty($t['args']))
+                $t['args'] = array();
+
+            $terms = get_object_term_cache($post->ID, $taxonomy);
+            if (empty($terms))
+                $terms = wp_get_object_terms($post->ID, $taxonomy, $t['args']);
+
+            $values = array();
+
+            foreach ($terms as $term)
+                $values[] = $term->slug;
+            $t['value'] = join(', ', $values);
+
+            $form_fields[$taxonomy] = $t;
+        }
+
+        return $form_fields;
+    }
 }
 
-Media_Categories::init();
+$mc_category_metabox = new Media_Categories('category');
