@@ -25,11 +25,10 @@ class Media_Categories {
         add_action('init', array(&$this, 'register_media_categories'));
         add_action('init', array(&$this, 'custom_gallery_shortcode'));
 
+        add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
+
         /* Only before WordPress 3.5 */
         if( $wp_version <= 3.4 ){
-
-            // New built in support for taxonomy metaboxes makes this obsolete in WordPress 3.5
-            add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
 
             // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
             add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
@@ -107,6 +106,10 @@ class Media_Categories {
         $form_fields[$form_slug]['helps'] = sprintf(__('Select a %s, use the text fields above to filter'), strtolower($taxonomy->labels->singular_name));
         $form_fields[$form_slug]['input'] = 'html';
         $form_fields[$form_slug]['html'] = $metabox;
+
+        // After 3.5 this will make sure the metabox only loads on the modal.
+        $form_fields[$form_slug]['show_in_edit'] = false;
+
         
         return $form_fields;
     }
