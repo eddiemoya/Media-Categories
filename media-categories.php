@@ -243,10 +243,21 @@ class Media_Categories {
         if ( 'RAND' == $order )
             $orderby = 'none';
                 
+        $tax_query = array();
+
         if( !empty($$mc_tax) ){ 
    
             $term = ${$mc_tax};
             $term_field = (is_numeric($term)) ? 'id' : 'slug';
+            $tax_query = array(
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => $mc_tax, 
+                        'field' => $term_field, 
+                        'terms' => $term
+                    )
+                )
+            );
               
             if(!isset($attr['id']))
                 $id = '';
@@ -254,7 +265,7 @@ class Media_Categories {
         
         if ( !empty($include) ) {
             $include = preg_replace( '/[^0-9,]+/', '', $include );
-            $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
+            $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
 
             $attachments = array();
             foreach ( $_attachments as $key => $val ) {
@@ -262,9 +273,9 @@ class Media_Categories {
             }
         } elseif ( !empty($exclude) ) {
             $exclude = preg_replace( '/[^0-9,]+/', '', $exclude );
-            $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
+            $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
         } else {
-            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby, 'tax_query' => array(array('taxonomy' => $mc_tax, 'field' => $term_field, 'terms' => $term))) );
+            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
         }
 
         if ( empty($attachments) )
