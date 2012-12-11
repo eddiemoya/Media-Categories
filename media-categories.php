@@ -17,19 +17,27 @@ class Media_Categories {
      * @param type $taxonomy 
      */
     public function __construct($taxonomy) {
-        
+        global $wp_version;
         // Store each instance of this class (for use when localizing scripts)
         $this->taxonomy = $taxonomy;
         self::$instances[] = $this;
         
         add_action('init', array(&$this, 'register_media_categories'));
         add_action('init', array(&$this, 'custom_gallery_shortcode'));
-        add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
-        
-        /* These only need to occur once */
-        add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
-        add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
-        add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+
+        /* Only before WordPress 3.5 */
+        if( $wp_version <= 3.4 ){
+
+            // New built in support for taxonomy metaboxes makes this obsolete in WordPress 3.5
+            add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
+
+            // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
+            add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
+
+            // Loading these in this fashion no longer applies in 3.5 because of new built-in support for taxonomy metaboxes on the editor page.
+            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
+            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+        }
         
         
 
@@ -207,7 +215,14 @@ class Media_Categories {
      * @return string HTML content to display gallery.
      */
     function gallery_shortcode($attr) {
-        global $post;
+        global $wp_version;
+
+        // Could probably just leave it as get_post(), but i'm being lazy and don't feel like testing to be sure - so im putting in this logic to avoid any possible problem.
+        if($wp_version <= 3.4){
+            global $post;
+        } else {
+            $post = get_post();
+        }
 
         static $instance = 0;
         $instance++;
@@ -364,7 +379,9 @@ class Media_Categories {
      * and its only purpose is to change the output of terms in attachments so that they used term slugs
      * rather than names.
      * 
-     * @linkhttp://core.trac.wordpress.org/ticket/20765
+     * NOTE: This is no longer necessary in WordPress 3.5 - the patch fixing this problem was committed.
+     *
+     * @link http://core.trac.wordpress.org/ticket/20765
      * @link http://wordpress.org/support/topic/media-categories-2-not-saving-correctly-when-two-categories-with-same-name
      * @see /wp-admin/includes/media.php:get_attachemt_fields_to_edit()
      * 
