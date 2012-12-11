@@ -271,7 +271,7 @@ class Media_Categories {
         }
         
         if ( !empty($include) ) {
-            $include = preg_replace( '/[^0-9,]+/', '', $include );
+            //$include = preg_replace( '/[^0-9,]+/', '', $include ); see: http://core.trac.wordpress.org/ticket/21827
             $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
 
             $attachments = array();
@@ -279,7 +279,7 @@ class Media_Categories {
                 $attachments[$val->ID] = $_attachments[$key];
             }
         } elseif ( !empty($exclude) ) {
-            $exclude = preg_replace( '/[^0-9,]+/', '', $exclude );
+            //$exclude = preg_replace( '/[^0-9,]+/', '', $exclude ); see: http://core.trac.wordpress.org/ticket/21827
             $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
         } else {
             $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
