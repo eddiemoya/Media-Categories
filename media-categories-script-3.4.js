@@ -7,7 +7,6 @@
  */
 
 jQuery(document).ready(function($){
-    console.log('test');
     $.each(taxonomy, function(index, tax){
 
         $('.media-upload-form tr.'+ tax + '').hide();
@@ -46,7 +45,7 @@ jQuery(document).ready(function($){
         $('#' + tax + '-search').keyup(function() {
             var val = $('#' + tax + '-search').val(); 
             var lis = $("#"+ tax +"checklist li");
-            
+
             if(val.length > 0){
                 lis.hide();
             } else {
