@@ -46,7 +46,12 @@ jQuery(document).ready(function($){
         $('#' + tax + '-search').keyup(function() {
             var val = $('#' + tax + '-search').val(); 
             var lis = $("#"+ tax +"checklist li");
-            lis.hide();
+            
+            if(val.length > 0){
+                lis.hide();
+            } else {
+                lis.show();
+            }
 
             // find li labels's containing term, then back to parent li
             var containingLabels = $("#"+ tax +"checklist label:icontains('" + val + "')");
