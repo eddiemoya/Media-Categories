@@ -18,46 +18,41 @@ jQuery(document).ready(function($){
     delete wp.media.view.AttachmentCompat.prototype.events['change input'];
     wp.media.view.AttachmentCompat.prototype.events['change input[type!="checkbox"]'] = 'save';
 
-    // wp.media.view.AttachmentCompat.prototype.save = function( status ) {
-    //      var data = {};
-
-    //         if ( event )
-    //             event.preventDefault();
-
-    //         _.each( this.$el.serializeArray(), function( pair ) {
-    //             data[ pair.name ] = pair.value;
-    //         });
-
-    //         this.model.saveCompat( data );
-    //         if(wp.media.view.AttachmentCompat.taxopen == true){
-    //             $('td.field').slideDown();
-    //             console.log($('td.field'))
-    //         }
-    //     }
-
     $.each(taxonomy, function(index, tax){
         
-        $('.compat-field-'+tax+'_metabox').live('mouseleave', function(){
+        var metabox_class = '.compat-field-'+tax+'_metabox';
+
+        // Trigger the 'change' event when the mouse leaves the metabox.
+        $(metabox_class).live('mouseleave', function(){
             $('.compat-item input:first').trigger('change');
-          });
+        });
 
-        $('.compat-field-'+tax+'_metabox th').live('click', function(){
+        // Toggle the visiblity of the metabox on clicking the label
+        $(metabox_class + ' th').live('click', function(){
 
+            /*
+             * .categorydiv and .help are hidden by css to start with - to make it start from a closed position.
+             * This is different from the normal toggling of the td.field. This fixes it so that it bhaves normally after
+             * the first click.
+             */
             if($('.media-sidebar .categorydiv, .media-sidebar .categorydiv + .help').css('display') == 'none'){
                 $(this).parent().find('td.field').hide();
                 $('.media-sidebar .categorydiv, .media-sidebar .categorydiv + .help').show();
             }
 
-            if($(this).parent().find('td.field').is(":visible")){
-                $(this).parent().find('td.field').slideUp(); 
+            var field_container = $(this).parent().find('td.field');
+
+            // Depending on the current state of td.field, hide or show it, and flip the arrow indicator.
+            if(field_container.is(":visible")){
+                field_container.slideUp(); 
                 $(this).parent().find('.arrow-up').attr('class', 'arrow-down');
-                wp.media.view.AttachmentCompat.taxopen = false;
+
+
             } else {
-                $(this).parent().find('td.field').slideDown();
+                field_container.slideDown();
                 $(this).parent().find('.arrow-down').attr('class', 'arrow-up');
-                wp.media.view.AttachmentCompat.taxopen = true;
+
             }
-            
         });
 
         $('.media-sidebar input').live('click', function(){
