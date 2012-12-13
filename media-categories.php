@@ -2,13 +2,13 @@
 Plugin Name: Media Categories
 Plugin URI: http://wordpress.org/extend/plugins/media-categories-2
 Description:  Allows users to assign categories to media with a clean and simplified, filterable category meta box and use shortcodes to display category galleries
-Version: 1.4.1
+Version: 1.5
 Author: Eddie Moya
 Author URL: http://eddiemoya.com
 */
 
 class Media_Categories {
-
+    public static $version = 1.5;
     public static $instances;
     public $taxonomy;
     
