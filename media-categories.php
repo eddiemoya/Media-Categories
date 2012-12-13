@@ -36,8 +36,13 @@ class Media_Categories {
             // Loading these in this fashion no longer applies in 3.5 because of new built-in support for taxonomy metaboxes on the editor page.
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+        } else {
+
+            add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
+            add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
         }
         
+
         
 
     }
@@ -46,6 +51,8 @@ class Media_Categories {
      * Enqueue javascript
      */
     function enqueue_media_categories_scripts() {
+        global $wp_version;
+
         if (is_admin()) {
             
             // Get each instance of this class, and pass each taxonomy in to javascript
@@ -53,8 +60,9 @@ class Media_Categories {
                 $tax[] = apply_filters('mc_taxonomy', $instance->taxonomy);
             }
                 
-        
-            wp_register_script('media_categories_metabox_script', plugins_url('media-categories-script.js', __FILE__));
+            $filename = ($wp_version <= 3.4) ? 'media-categories-script-3.4.js' : 'media-categories-script.js';
+
+            wp_register_script('media_categories_metabox_script', plugins_url($filename, __FILE__));
             wp_enqueue_script('media_categories_metabox_script');
             
             wp_localize_script('media_categories_metabox_script', 'taxonomy',  $tax);
@@ -65,9 +73,13 @@ class Media_Categories {
      * 
      */
     function enqueue_media_categories_styles() {
+        global $wp_version;
+
         if (is_admin()) { 
             
-            wp_register_style('media_categories_metabox_style', plugins_url('media-categories-style.css', __FILE__));
+            $filename = ($wp_version <= 3.4) ? 'media-categories-style-3.4.css' : 'media-categories-style.css';
+            
+            wp_register_style('media_categories_metabox_style', plugins_url($filename , __FILE__));
             wp_enqueue_style( 'media_categories_metabox_style');
         }
     }
@@ -88,7 +100,7 @@ class Media_Categories {
      * a normal textfield, I capture the output of a custom metabox and insert it.
      */
     function add_media_categories_metabox($form_fields, $post) {
-
+        global $wp_version;
         require_once('./includes/meta-boxes.php');
         
         $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
@@ -102,7 +114,7 @@ class Media_Categories {
         
         $form_slug = $this->taxonomy . '_metabox';
             
-        $form_fields[$form_slug]['label'] = $taxonomy->labels->name;
+        $form_fields[$form_slug]['label'] = $taxonomy->labels->name . "<div class='arrow-down'></div>";
         $form_fields[$form_slug]['helps'] = sprintf(__('Select a %s, use the text fields above to filter'), strtolower($taxonomy->labels->singular_name));
         $form_fields[$form_slug]['input'] = 'html';
         $form_fields[$form_slug]['html'] = $metabox;
@@ -137,12 +149,12 @@ class Media_Categories {
         extract(wp_parse_args($args, $defaults), EXTR_SKIP);
         $tax = get_taxonomy($taxonomy);
         ?>
-
-        <div>
+        
+        <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
+        <div class="taxonomy-metabox-field-container">
             <label class='category-filter' for="category-filter">Search <?php echo $tax->labels->name; ?>:</label>
-            <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' /></div>
-            <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
-
+            <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' />
+        </div>
             <ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
                 <li class="tabs"><a href="#<?php echo $taxonomy; ?>-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
                 <li class="hide-if-no-js"><a href="#<?php echo $taxonomy; ?>-pop" tabindex="3"><?php _e('Most Used'); ?></a></li>
