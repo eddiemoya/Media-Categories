@@ -1,9 +1,9 @@
 === Media Categories ===
 Contributors: eddiemoya
 Donate link: http://eddiemoya.com
-Tags: media categories, media, category, categories, attachment categories, taxonomy, category metabox, metabox, admin, media library, media editor, attachment editor, attachment, images, gallery shortcode, gallery, shortcode, gallery category, filter, media taxonomy, post tags
+Tags: media categories, media, category, categories, attachment categories, taxonomy, category metabox, metabox, admin, media library, media editor, attachment editor, attachment, images, gallery shortcode, gallery, shortcode, gallery category, filter, media taxonomy, post tags, modal, category filter
 Requires at least: 3.0
-Tested up to: 3.3.2
+Tested up to: 3.5
 Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,12 +17,13 @@ The "Search Categories" field allows you to narrow your search for a category as
 [Searchable Categories](http://wordpress.org/extend/plugins/searchable-categories/) plugin. If you would like to enable this feature for your posts
 [download his plugin here](http://wordpress.org/extend/plugins/searchable-categories/)
 
+Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metabox to the attachment editor is happening entirely inside of WordPress. This is great, and we now have true metaboxes for taxonomy - they core team has also accepted my patches which caused several headaches for this plugin. However the new Media Modal in 3.5 leaves something to be desired. I've worked to try to make something that doesnt take up too much space, while still being functional. To be sure, there are some behavioral bugs to work out, it will be a work in progress as the kinks are worked out of the new Media Modal as well as this plugin.
 
 = Updates =
-* **NEW! Since version 1.4 : This plugin allows for **multiple metaboxes** to be created for any number of taxonomies.
+* Since version 1.5 : Supports the new WordPress 3.5 by adding the metabox to the new Media Modal. Also fixed bugs in the gallery shorcode behavior. All while still supporting 3.0 - 3.4.x
+* Since version 1.4 : This plugin allows for **multiple metaboxes** to be created for any number of taxonomies.
 * Since version 1.3 : A **filter** has been added to allow developers to modify which taxonomy is being used. See 'Other Notes' > 'Taxonomy Filter Usage' for details
 * Since version 1.2 : This plugin extends the native **[gallery] shortcode** of WordPress so that it has a 'category' parameter. See the "Shortcode Usage" under "Other Notes" for more details. 
-
 
 == Shortcode Usage ==
 
@@ -154,13 +155,13 @@ this is done.
 No. Currently there is no way to change the taxonomy, or create additional taxonomy metaboxes
 in the Media Library without adding a little bit of PHP (preferably to you theme).
 
-Have no fear however, I do have intentions to add magical plugins options pages to allow
+Have no fear however, I do have intentions to add magical plugin options pages to allow
 as much as possible to be done without development - sorry but I have no timeline for when this
 might happen.
 
 = Is there any way to see all the attachment/media items associated to a category/taxonomy term, the way we can with Posts? =
 
-Not yet. The next major effort in this plugins development is going to be the addition of taxonomy listing pages. 
+In WordPress 3.5, you can now see any taxonomy enabled for attachments the same way you see Categories for Posts. For earlier versions, I'm afraid the answer is no.
 
 = I found a bug, or I would like to suggest/request a feature, can I submit it? =
 
@@ -173,6 +174,13 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 
 
 == Changelog ==
+
+= 1.5 =
+* Updated for WordPress 3.5
+* For WordPress 3.5 - Stop showing our custom metabox in the main image editor, let users use the built in metaboxes.
+* For WordPress 3.5 - Add customized metabox to the new Media Modal attachment details.
+* Bugfix: Gallery Shortcode would only work if a taxonomy and term were provided. This has been solved for all supported version of WordPress.
+* Bugfix: The search filter on the metabox - once use and all text removed, would empty out the entire list of terms, because no terms matched an empty string. This has been solved for all version of WordPress.
 
 = 1.4.1 =
 * Missing javascript update for the 1.4 update.
@@ -201,6 +209,9 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 * Initial commit.
 
 == Upgrade Notice ==
+
+= 1.5 =
+Update for WordPress 3.5 compatibility, and important bug fixes for all versions of WordPress
 
 = 1.4.1 =
 Bug Fix! Fixed javascript when using multiple taxonomy metaboxes.
