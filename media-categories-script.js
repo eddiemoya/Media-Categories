@@ -2,7 +2,7 @@
  * jQuery for Media Categories plugin
  * 
  * @author Eddie Moya
- * @since 1.1
+ * @since 1.5
  * 
  */
 
