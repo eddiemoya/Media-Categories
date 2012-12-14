@@ -60,7 +60,7 @@ class Media_Categories {
                 $tax[] = apply_filters('mc_taxonomy', $instance->taxonomy);
             }
                 
-            $filename = ($wp_version <= 3.4) ? 'media-categories-script-3.4.js' : 'media-categories-script.js';
+            $filename = ($wp_version < 3.5) ? 'media-categories-script-3.4.js' : 'media-categories-script.js';
 
             wp_register_script('media_categories_metabox_script', plugins_url($filename, __FILE__));
             wp_enqueue_script('media_categories_metabox_script');
@@ -77,7 +77,7 @@ class Media_Categories {
 
         if (is_admin()) { 
             
-            $filename = ($wp_version <= 3.4) ? 'media-categories-style-3.4.css' : 'media-categories-style.css';
+            $filename = ($wp_version < 3.5) ? 'media-categories-style-3.4.css' : 'media-categories-style.css';
             
             wp_register_style('media_categories_metabox_style', plugins_url($filename , __FILE__));
             wp_enqueue_style( 'media_categories_metabox_style');
@@ -233,7 +233,7 @@ class Media_Categories {
         global $wp_version;
 
         // Could probably just leave it as get_post(), but i'm being lazy and don't feel like testing to be sure - so im putting in this logic to avoid any possible problem.
-        if($wp_version <= 3.4){
+        if($wp_version < 3.5){
             global $post;
         } else {
             $post = get_post();
