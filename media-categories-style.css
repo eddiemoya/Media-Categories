@@ -1,8 +1,5 @@
 .media-sidebar .category-tabs, 
-.media-sidebar tr.compat-field-category,
-.media-sidebar .categorydiv,
-.media-sidebar .categorydiv + .help,
-.media-sidebar #category-adder,
+.media-sidebar .metabox_container .field,
 .media-sidebar .wp-hidden-children{
     display:none;
 }
@@ -18,14 +15,14 @@
 	margin-left:-85px;
 }*/
 
-.compat-field-category_metabox td.field {
+.metabox_container td.field {
 	width: 99%;
 }
-.compat-field-category_metabox input[type="checkbox"] {
+.metabox_container input[type="checkbox"] {
 	width: auto;
 }
 
-tr.compat-field-category_metabox th.label span {
+tr.metabox_container th.label span {
 	font-weight: bold;
 	text-transform: uppercase;
 	font-size: 12px;
@@ -34,7 +31,7 @@ tr.compat-field-category_metabox th.label span {
 	margin: 0 0 8px;
 }
 
-.compat-field-category_metabox, .attachment-details.save-ready {
+.metabox_container, div.attachment-details {
 	overflow: hidden;
 	box-shadow: 0 1px 0 white;
 	border-bottom: 1px solid #E5E5E5;
@@ -42,7 +39,7 @@ tr.compat-field-category_metabox th.label span {
 	padding-bottom: 11px;
 }
 
-div.attachment-details.save-ready {
+div.attachment-details {
 	padding-bottom: 24px;
 	margin-bottom: 10px;
 }

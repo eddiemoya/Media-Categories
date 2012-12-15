@@ -18,43 +18,61 @@ jQuery(document).ready(function($){
     delete wp.media.view.AttachmentCompat.prototype.events['change input'];
     wp.media.view.AttachmentCompat.prototype.events['change input[type!="checkbox"]'] = 'save';
 
+    //Overriding saveCompat just so i can add the trigger.
+    wp.media.model.Attachment.prototype.saveCompat = 
+        function( data, options ) {
+            var model = this;
+
+            // If we do not have the necessary nonce, fail immeditately.
+            if ( ! this.get('nonces') || ! this.get('nonces').update )
+                return $.Deferred().rejectWith( this ).promise();
+
+            return wp.media.post( 'save-attachment-compat', _.defaults({
+                id:      this.id,
+                nonce:   this.get('nonces').update,
+                post_id: wp.media.model.settings.post.id
+            }, data ) ).done( function( resp, status, xhr ) {
+                model.set( model.parse( resp, xhr ), options );
+                //trigger so i can detect the refreshing of the sidebar.
+                $('.compat-attachment-fields').trigger('modal-refreshed');
+            });
+        }
+
     $.each(taxonomy, function(index, tax){
-        
-        var metabox_class = '.compat-field-'+tax+'_metabox';
+
+        var input_class = '.compat-field-'+tax;
+        var metabox_class = input_class+'_metabox';
+
+
+        wp.media.view.AttachmentCompat.prototype.events['click th'] = 'slideToggle';
+        wp.media.view.AttachmentCompat.prototype.slideToggle = function( event ){
+
+            var metabox_container = this.$el.find('.metabox_container');
+
+            metabox_container.find('td.field').slideToggle();
+                   
+            if(metabox_container.find('.arrow-down').length > 0){
+                metabox_container.find('.arrow-down').attr('class', 'arrow-up');
+            } else {
+                metabox_container.find('.arrow-up').attr('class', 'arrow-down');
+            }
+
+        }
+
+        $('.compat-attachment-fields').live('modal-refreshed', function(){
+            $(input_class).hide();
+            $(metabox_class).addClass('metabox_container');
+        })
+
+        $('.attachments').live('click', function(){
+            $(input_class).hide();
+            $(metabox_class).addClass('metabox_container');
+        })
 
         // Trigger the 'change' event when the mouse leaves the metabox.
-        $(metabox_class).live('mouseleave', function(){
-            $('.compat-item input:first').trigger('change');
-        });
+        $(metabox_class).live('mouseleave', function() { $('.compat-item input:first').trigger('change');});
 
-        // Toggle the visiblity of the metabox on clicking the label
-        $(metabox_class + ' th').live('click', function(){
-
-            /*
-             * .categorydiv and .help are hidden by css to start with - to make it start from a closed position.
-             * This is different from the normal toggling of the td.field. This fixes it so that it bhaves normally after
-             * the first click.
-             */
-            if($('.media-sidebar .categorydiv, .media-sidebar .categorydiv + .help').css('display') == 'none'){
-                $(this).parent().find('td.field').hide();
-                $('.media-sidebar .categorydiv, .media-sidebar .categorydiv + .help').show();
-            }
-
-            var field_container = $(this).parent().find('td.field');
-
-            // Depending on the current state of td.field, hide or show it, and flip the arrow indicator.
-            if(field_container.is(":visible")){
-                field_container.slideUp(); 
-                $(this).parent().find('.arrow-up').attr('class', 'arrow-down');
-
-
-            } else {
-                field_container.slideDown();
-                $(this).parent().find('.arrow-down').attr('class', 'arrow-up');
-
-            }
-        });
-
+        //Sync the checkboxes to comma delimited list in the hidden text field for the taxonomy.
         $('.media-sidebar input').live('click', function(){
     
             var form_fields = $(this).closest("tbody");
