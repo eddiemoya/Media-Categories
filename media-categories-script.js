@@ -53,8 +53,10 @@ jQuery(document).ready(function($){
                    
             if(metabox_container.find('.arrow-down').length > 0){
                 metabox_container.find('.arrow-down').attr('class', 'arrow-up');
+                wp.media.view.AttachmentCompat.prototype.metabox_status = 'open';
             } else {
                 metabox_container.find('.arrow-up').attr('class', 'arrow-down');
+                wp.media.view.AttachmentCompat.prototype.metabox_status = 'closed';
             }
 
         }
@@ -62,6 +64,12 @@ jQuery(document).ready(function($){
         $('.compat-attachment-fields').live('modal-refreshed', function(){
             $(input_class).hide();
             $(metabox_class).addClass('metabox_container');
+
+            if(wp.media.view.AttachmentCompat.prototype.metabox_status == 'open'){
+                $(metabox_class).find('td.field').show();
+                $(metabox_class).find('.arrow-down').attr('class', 'arrow-up');
+            }
+
         })
 
         $('.attachments').live('click', function(){
