@@ -28,7 +28,7 @@ class Media_Categories {
         add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
 
         /* Only before WordPress 3.5 */
-        if( $wp_version <= 3.4 ){
+        if( $wp_version < 3.5 ){
 
             // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
             add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);

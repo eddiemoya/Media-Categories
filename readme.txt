@@ -2,7 +2,7 @@
 Contributors: eddiemoya
 Donate link: http://eddiemoya.com
 Tags: media categories, media, category, categories, attachment categories, taxonomy, category metabox, metabox, admin, media library, media editor, attachment editor, attachment, images, gallery shortcode, gallery, shortcode, gallery category, filter, media taxonomy, post tags, modal, category filter
-Requires at least: 3.0
+Requires at least: 3.3
 Tested up to: 3.5
 Stable tag: 1.4.1
 License: GPLv2 or later
@@ -17,10 +17,10 @@ The "Search Categories" field allows you to narrow your search for a category as
 [Searchable Categories](http://wordpress.org/extend/plugins/searchable-categories/) plugin. If you would like to enable this feature for your posts
 [download his plugin here](http://wordpress.org/extend/plugins/searchable-categories/)
 
-Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metabox to the attachment editor is happening entirely inside of WordPress. This is great, and we now have true metaboxes for taxonomy - they core team has also accepted my patches which caused several headaches for this plugin. However the new Media Modal in 3.5 leaves something to be desired. I've worked to try to make something that doesnt take up too much space, while still being functional. To be sure, there are some behavioral bugs to work out, it will be a work in progress as the kinks are worked out of the new Media Modal as well as this plugin.
+Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metabox to the attachment editor is happening entirely inside of WordPress. This is great, and we now have true metaboxes for taxonomy - they core team has also accepted my patches which caused several headaches for this plugin. Media Categories 1.5 takes advantage of the new Media Modal - with this plugin, you can now edit a images categories directly from the modal screen. I've also fixed some long standing bugs with the shortcode gallery functionality.
 
 = Updates =
-* Since version 1.5 : Supports the new WordPress 3.5 by adding the metabox to the new Media Modal. Also fixed bugs in the gallery shorcode behavior. All while still supporting 3.0 - 3.4.x
+* Since version 1.5 : Supports the new WordPress 3.5 by adding the metabox to the new Media Modal. Also fixed bugs in the gallery shorcode behavior. All while still supporting 3.3.x - 3.4.x
 * Since version 1.4 : This plugin allows for **multiple metaboxes** to be created for any number of taxonomies.
 * Since version 1.3 : A **filter** has been added to allow developers to modify which taxonomy is being used. See 'Other Notes' > 'Taxonomy Filter Usage' for details
 * Since version 1.2 : This plugin extends the native **[gallery] shortcode** of WordPress so that it has a 'category' parameter. See the "Shortcode Usage" under "Other Notes" for more details. 
