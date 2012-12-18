@@ -180,7 +180,7 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 * For WordPress 3.5 - Stop showing our custom metabox in the main image editor, let users use the built in metaboxes.
 * For WordPress 3.5 - Add customized metabox to the new Media Modal attachment details.
 * Bugfix: Gallery Shortcode would only work if a taxonomy and term were provided. This has been solved for all supported version of WordPress.
-* Bugfix: The search filter on the metabox - once use and all text removed, would empty out the entire list of terms, because no terms matched an empty string. This has been solved for all version of WordPress.
+* Bugfix: The search filter on the metabox - deleting everying in the search filter resulted in no items being found. This has been solved for all supported version of WordPress.
 
 = 1.4.1 =
 * Missing javascript update for the 1.4 update.
