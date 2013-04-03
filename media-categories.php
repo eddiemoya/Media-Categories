@@ -284,7 +284,10 @@ class Media_Categories {
 
         if( !empty($$mc_tax) ){ 
    
-            $term = ${$mc_tax};
+            //Modified 1 line of code on 2013.04.03 by Bryan Lee Williams (BLWBebopKid)
+            //Split the categories on commas into an array of categories
+            //if only one category exists it will be a single elemnt array
+            $term = explode(',',${$mc_tax});
             $term_field = (is_numeric($term)) ? 'id' : 'slug';
             $tax_query = array(
                 'tax_query' => array(
