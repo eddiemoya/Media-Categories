@@ -139,7 +139,7 @@ class Media_Categories {
      */
     function media_categories_meta_box($post, $box) {
         
-        require_once(plugin_dir_path(__FILE__) . 'attachment-walker-category-checklist-class.php');
+        require_once(plugin_dir_path(__FILE__) . 'walkers/attachment-walker-category-checklist-class.php');
              
         $defaults = array('taxonomy' => apply_filters('mc_taxonomy',$this->taxonomy));
         
