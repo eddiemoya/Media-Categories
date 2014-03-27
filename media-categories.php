@@ -62,6 +62,7 @@ class Media_Categories {
                 
             $filename = ($wp_version < 3.5) ? 'media-categories-script-3.4.js' : 'media-categories-script.js';
 
+            wp_enqueue_media();
             wp_register_script('media_categories_metabox_script', plugins_url($filename, __FILE__));
             wp_enqueue_script('media_categories_metabox_script');
             
