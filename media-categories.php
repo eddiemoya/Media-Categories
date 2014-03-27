@@ -26,6 +26,7 @@ class Media_Categories {
         add_action('init', array(&$this, 'custom_gallery_shortcode'));
 
         add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
+        add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
 
         /* Only before WordPress 3.5 */
         if( $wp_version < 3.5 ){
@@ -431,6 +432,39 @@ class Media_Categories {
 
         return $form_fields;
     }
+
+    /**
+     * This method generates a dropdown to filter items on the Media Library page.
+     **/    
+    public function restrict_manage_attachments() {
+        global $pagenow;
+        global $wp_query;
+
+        require_once(plugin_dir_path(__FILE__) . 'walkers/mc-walker-taxonomy-dropdown.php');
+
+        $terms = get_terms($this->taxonomy);
+        $walker = new SH_Walker_TaxonomyDropdown();
+      
+        if ($pagenow=='upload.php' && !empty($terms)) {
+
+            $taxonomy = get_taxonomy($this->taxonomy);
+            return wp_dropdown_categories(array(
+                'show_option_all' =>  __("Show All {$taxonomy->label}"),
+                'taxonomy'        =>  $this->taxonomy,
+                'name'            =>  $this->taxonomy,
+                'orderby'         =>  'name',
+                'selected'        =>  $wp_query->query[$this->taxonomy],
+                'hierarchical'    =>  true,
+                'depth'           =>  3,
+                'show_count'      =>  true, // Show # listings in parens
+                'hide_empty'      =>  true, // Don't show businesses w/o listings
+                'hide_if_empty'   =>  true,
+                'walker'          =>  $walker
+            ));
+        }
+
+    }
+            
 }
 
 $mc_category_metabox = new Media_Categories('category');
