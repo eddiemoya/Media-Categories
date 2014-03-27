@@ -15,9 +15,11 @@
 	margin-left:-85px;
 }*/
 
-.metabox_container td.field {
+.metabox_container td.field, 
+.metabox_container th.label {
 	width: 99%;
 }
+
 .metabox_container input[type="checkbox"] {
 	width: auto;
 }
@@ -28,6 +30,7 @@ tr.metabox_container th.label span {
 	font-size: 12px;
 	color: #777;
 	text-shadow: 0 1px 0 white;
+	text-align: center;
 	margin: 0 0 8px;
 }
 
