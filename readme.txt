@@ -175,6 +175,10 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 
 == Changelog ==
 
+== 1.6 ==
+* New Feature - Filter Media Library admin page by taxonomy term with taxonomy dropdown menu
+* Bugfix - Toggle buttons for taxonomy boxes on media modal would toggle all taxonomy areas instead of just the one you clicked. https://github.com/eddiemoya/Media-Categories/issues/13
+
 = 1.5 =
 * Updated for WordPress 3.5
 * For WordPress 3.5 - Stop showing our custom metabox in the main image editor, let users use the built in metaboxes.
