@@ -40,15 +40,19 @@ jQuery(document).ready(function($){
 
     $.each(taxonomy, function(index, tax){
 
+        
+
         var input_class = '.compat-field-'+tax;
         var metabox_class = input_class+'_metabox';
 
+        var $func = tax + '_slideTogle';
 
-        wp.media.view.AttachmentCompat.prototype.events['click th'] = 'slideToggle';
+        wp.media.view.AttachmentCompat.prototype.events['click '+ metabox_class+'>th'] = 'slideToggle';
         wp.media.view.AttachmentCompat.prototype.slideToggle = function( event ){
 
-            var metabox_container = this.$el.find('.metabox_container');
+            var metabox_container = $(event.target).closest('.metabox_container');
 
+            console.log(event.target.parent);
             metabox_container.find('td.field').slideToggle();
                    
             if(metabox_container.find('.arrow-down').length > 0){
