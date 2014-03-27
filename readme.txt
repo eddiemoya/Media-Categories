@@ -105,7 +105,7 @@ function mc_filter_taxonomy($taxonomy){
         $taxonomy = 'post_tag';
     }
 
-    return $taxonomy
+    return $taxonomy;
 }
 `
 The above code will swap out all references to 'category' with appropriate (properly pluralized) references to the 'post_tag' taxonomy.
