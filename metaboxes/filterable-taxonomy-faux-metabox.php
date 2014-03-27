@@ -2,14 +2,16 @@
 
 require_once(plugin_dir_path(dirname(__FILE__)). 'abstract-metabox.php');
 
-class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
+class Filterable_Taxonomy_Faux_Metabox extends MC_Taxonomy_Metabox {
 
     /**
      * Here I insert a custom form field into the media editor, but instead of
      * a normal textfield, I capture the output of a custom metabox and insert it.
      */
-    public function add_taxonomy_meta_box($form_fields, $post) {
+    public function add_taxonomy_meta_box($form_fields, $post = null) {
         global $wp_version;
+        global $pagenow;
+
         require_once('./includes/meta-boxes.php');
         
         $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
@@ -17,7 +19,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
 
         ob_start();
         
-            $this->media_categories_meta_box($post, array('args' => array ('taxonomy' => $tax_name, 'tax' => $taxonomy)));
+            $this->taxonomy_meta_box($post, array('args' => array ('taxonomy' => $tax_name, 'tax' => $taxonomy)));
             
         $metabox = ob_get_clean();
         
@@ -45,9 +47,9 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
      * using ID's to using slugs.
      * 
      */
-    function taxonomy_meta_box($post, $box) {
+    function taxonomy_meta_box($post, $box ) {
         
-        require_once(plugin_dir_path(__FILE__) . 'walkers/attachment-walker-category-checklist-class.php');
+        require_once(plugin_dir_path(dirname(dirname(__FILE__))) . 'walkers/attachment-walker-category-checklist-class.php');
              
         $defaults = array('taxonomy' => apply_filters('mc_taxonomy',$this->taxonomy));
         
@@ -116,6 +118,6 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
         <?php endif; ?>
         </div>
             <?php
-    }}
+    }
 
 }

@@ -6,9 +6,6 @@
  * 
  */
 
-
-
-
 jQuery(document).ready(function($){
 
     /**
@@ -39,8 +36,6 @@ jQuery(document).ready(function($){
         }
 
     $.each(taxonomy, function(index, tax){
-
-        
 
         var input_class = '.compat-field-'+tax;
         var metabox_class = input_class+'_metabox';
@@ -118,9 +113,15 @@ jQuery(document).ready(function($){
         * http://wordpress.org/extend/plugins/searchable-categories/
         */
 
-        $('#' + tax + '-search').live('keyup', function() {
-            var val = $('.media-sidebar #' + tax + '-search').val(); 
-            var lis = $(".media-sidebar #"+ tax +"checklist li");
+        $('#' + tax + '-search').live('keyup', function(event) {
+
+            selector_context = ('attachment' != pagenow) ? '.media-sidebar ' : '';
+                  
+
+            var val = this.value; 
+            var lis = $(selector_context + "#"+ tax +"checklist li");
+
+
 
             if(val.length > 0){
                 lis.hide();
@@ -128,10 +129,10 @@ jQuery(document).ready(function($){
                 lis.show();
             }
             // find li labels's containing term, then back to parent li
-            var containingLabels = $(".media-sidebar #"+ tax +"checklist label:icontains('" + val + "')");
+            var containingLabels = $(selector_context + "#"+ tax +"checklist label:icontains('" + val + "')");
 
             containingLabels.closest('li').find('li').andSelf().show();
-            containingLabels.parents('.media-sidebar #'+ tax +'checklist li').show();
+            containingLabels.parents(selector_context + '#'+ tax +'checklist li').show();
         });
     });
 })

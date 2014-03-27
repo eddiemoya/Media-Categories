@@ -71,7 +71,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
                 echo "<input type='hidden' name='{$name}[]' value='0' />"; // Allows for an empty term set to be sent. 0 is an invalid Term ID and will be ignored by empty() checks.
                 ?>
                 <ul id="<?php echo $taxonomy; ?>checklist" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
-                           <?php $custom_walker = new Attachment_Walker_Category_Checklist ?>
+                           <?php $custom_walker = new Attachment_Walker_Category_Checklist(); ?>
                         <?php wp_terms_checklist($post->ID, array('taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $custom_walker)) ?>
                 </ul>
             </div>

@@ -7,6 +7,9 @@ Author: Eddie Moya
 Author URL: http://eddiemoya.com
 */
 
+require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.5/filterable-taxonomy-meta-box.php');
+require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.4/filterable-taxonomy-meta-box.php');
+
 class Media_Categories {
     public static $version = 1.5;
     public static $instances;
@@ -25,16 +28,13 @@ class Media_Categories {
         
         add_action('init', array(&$this, 'register_media_categories'));
         add_action('init', array(&$this, 'custom_gallery_shortcode'));
-
         
+        // In < 3.5 this is used for the main metabox on media admin pages - because normal metaboxes were not available
+        // In 3.5 > This is used soley for the Media Modal right rail. Where there is also no normal metabox availability
+        add_filter('attachment_fields_to_edit', array(new Filterable_Taxonomy_Faux_Metabox($this->taxonomy), 'add_taxonomy_meta_box'), null, 2);
         
         /* Only before WordPress 3.5 */
         if( $wp_version < 3.5 ){
-
-            require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.4/filterable-taxonomy-meta-box.php');
-            $metabox = new Filterable_Taxonomy_Metabox($this->taxonomy);
-
-            add_filter('attachment_fields_to_edit', array($metabox, 'add_media_categories_metabox'), null, 2);
 
             // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
             add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
@@ -45,12 +45,13 @@ class Media_Categories {
 
         } else {
 
-            require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.5/filterable-taxonomy-meta-box.php');
-            $metabox = new Filterable_Taxonomy_Metabox($this->taxonomy);
-
-            add_filter('admin_menu', array($metabox, 'add_taxonomy_meta_box'));
+            add_filter('admin_menu', array(new Filterable_Taxonomy_Metabox($this->taxonomy), 'add_taxonomy_meta_box'));
 
             add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
+
+            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
+            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+
 
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
