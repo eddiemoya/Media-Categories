@@ -25,11 +25,12 @@ class Media_Categories {
         add_action('init', array(&$this, 'register_media_categories'));
         add_action('init', array(&$this, 'custom_gallery_shortcode'));
 
-        add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
-        add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
-
+        
+        
         /* Only before WordPress 3.5 */
         if( $wp_version < 3.5 ){
+
+            add_filter('attachment_fields_to_edit', array(&$this, 'add_media_categories_metabox'), null, 2);
 
             // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
             add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
@@ -38,6 +39,8 @@ class Media_Categories {
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
         } else {
+
+            add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
 
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
