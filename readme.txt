@@ -177,6 +177,7 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 
 == 1.6 ==
 * New Feature - Filter Media Library admin page by taxonomy term with taxonomy dropdown menu
+* New Feature - Filter taxonomy terms using "Searchable Categories" style taxonomy metaboxes are now in the real metaboxes as well as the Media Modal Faux metaboxes.
 * Bugfix - Toggle buttons for taxonomy boxes on media modal would toggle all taxonomy areas instead of just the one you clicked. https://github.com/eddiemoya/Media-Categories/issues/13
 
 = 1.5 =
