@@ -14,7 +14,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
 
         remove_meta_box( $this->taxonomy.'div', 'attachment', 'side');
         add_meta_box(
-            $this->taxonomy.'dcciv', 
+            $this->taxonomy.'div', 
             $taxonomy->labels->name, 
             array($this, 'taxonomy_meta_box'), 
             'attachment', 
@@ -72,7 +72,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
                 ?>
                 <ul id="<?php echo $taxonomy; ?>checklist" data-wp-lists="list:<?php echo $taxonomy?>" class="categorychecklist form-no-clear">
                            <?php $custom_walker = new Attachment_Walker_Category_Checklist(); ?>
-                        <?php wp_terms_checklist($post->ID, array('taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $custom_walker)) ?>
+                        <?php wp_terms_checklist($post->ID, array('taxonomy' => $taxonomy, 'popular_cats' => $popular_ids, 'walker' => $custom_walker, 'args' => array('value_field'=>'slug'))) ?>
                 </ul>
             </div>
         <?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
