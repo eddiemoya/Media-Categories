@@ -30,7 +30,7 @@ class Media_Categories {
         if(isset($args['override_default_gallery'])){
             $this->override_default_gallery = $args['override_default_gallery'];
         } else {
-            $this->override_default_gallery = true
+            $this->override_default_gallery = true;
         }
 
         $this->setup();
