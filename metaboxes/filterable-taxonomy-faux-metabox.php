@@ -63,7 +63,7 @@ class Filterable_Taxonomy_Faux_Metabox extends MC_Taxonomy_Metabox {
         
         <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
         <div class="taxonomy-metabox-field-container">
-            <label class='category-filter' for="category-filter">Search <?php echo $tax->labels->name; ?>:</label>
+            <label class='category-filter' for="category-filter">Filter <?php echo $tax->labels->name; ?>:</label>
             <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' />
         </div>
             <ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
