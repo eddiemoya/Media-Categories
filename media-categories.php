@@ -29,6 +29,8 @@ class Media_Categories {
         //Todo: $args should have a default and then be array merged.
         if(isset($args['override_default_gallery'])){
             $this->override_default_gallery = $args['override_default_gallery'];
+        } else {
+            $this->override_default_gallery = true
         }
 
         $this->setup();
