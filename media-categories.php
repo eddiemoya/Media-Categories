@@ -42,7 +42,7 @@ class Media_Categories {
         add_action('init', array(&$this, 'register_media_categories'));
         add_action('init', array(&$this, 'taxonomy_gallery_shortcode'));
         add_action('init', array(&$this, 'default_gallery_shortcode')); // For backward compatibility only!
-        
+
         // In < 3.5 this is used for the main metabox on media admin pages - because normal metaboxes were not available
         // In 3.5 > This is used soley for the Media Modal right rail. Where there is also no normal metabox availability
         add_filter('attachment_fields_to_edit', array(new Filterable_Taxonomy_Faux_Metabox($this->taxonomy), 'add_taxonomy_meta_box'), null, 2);
@@ -62,6 +62,7 @@ class Media_Categories {
             add_filter('admin_menu', array(new Filterable_Taxonomy_Metabox($this->taxonomy), 'add_taxonomy_meta_box'));
 
             add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
+            add_filter( 'manage_upload_sortable_columns', array($this, 'sortable_columns') );
 
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
@@ -398,8 +399,20 @@ class Media_Categories {
             return wp_dropdown_categories($dropdown_args);
         }
     }
+
+    public function sortable_columns( $columns ) {
+       
+        $column_id = ('category' == $this->taxonomy) ? 'categories' : 'taxonomy-'.$this->taxonomy;
+        $columns[$column_id] = $this->taxonomy;
+
+        return $columns;
+    }
             
 }
 
 global $mc_media_categories;
 $mc_media_categories = new Media_Categories('category');
+
+
+
+
