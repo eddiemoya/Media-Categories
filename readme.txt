@@ -12,14 +12,15 @@ Easily assign categories to media with a clean, simple, and searchable category 
 
 == Description ==
 
-Allows users to assign categories (or other taxonomy terms) to items in their Media Library with a clean and simplified, searchable version of the standard category meta box. 
-The "Search Categories" field allows you to narrow your search for a category as you type - this functionality is not native to WordPress but is instead borrowed from Jason Corradino's 
+Allows users to assign categories (or other taxonomy terms) to items in their Media Library with a clean and simplified, searchable version of the standard category meta box, as well as in a similar form in the Media Modal.
+The "Filter Categories" field allows you to narrow your search for a category as you type - this functionality is not native to WordPress but rather is derived from Jason Corradino's 
 [Searchable Categories](http://wordpress.org/extend/plugins/searchable-categories/) plugin. If you would like to enable this feature for your posts
 [download his plugin here](http://wordpress.org/extend/plugins/searchable-categories/)
 
 Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metabox to the attachment editor is happening entirely inside of WordPress. This is great, and we now have true metaboxes for taxonomy - they core team has also accepted my patches which caused several headaches for this plugin. Media Categories 1.5 takes advantage of the new Media Modal - with this plugin, you can now edit a images categories directly from the modal screen. I've also fixed some long standing bugs with the shortcode gallery functionality.
 
 = Updates =
+* Since version 1.6 : Supports WordPress 3.8.x * Reintroduces the category filter on metaboxes * Adds drowndown filters in the Media Library * Gallery Shortcode now accepts multiple terms.
 * Since version 1.5 : Supports the new WordPress 3.5 by adding the metabox to the new Media Modal. Also fixed bugs in the gallery shorcode behavior. All while still supporting 3.3.x - 3.4.x
 * Since version 1.4 : This plugin allows for **multiple metaboxes** to be created for any number of taxonomies.
 * Since version 1.3 : A **filter** has been added to allow developers to modify which taxonomy is being used. See 'Other Notes' > 'Taxonomy Filter Usage' for details
@@ -30,11 +31,15 @@ Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metab
 = Normal Shortcode Usage =
 
 This plugin takes advantage of the existing `[gallery]` shortcode for showing images by adding the `'category'` parameter. 
-The value passed to the `'category'` parameter can be either the `category` `slug`, or the `term_id`.
+The value passed to the `'category'` parameter can be either the `category` `slug`, or the `term_id`. 
 
 `[gallery category="my-category-slug"]
 OR
 [gallery category="12"]`
+
+Since 1.6 you can also pass multiple terms in a comma delimited list. * Thanks to [Bryan Lee Williams](https://github.com/BLWBebopKid) for the [pull request](https://github.com/eddiemoya/Media-Categories/pull/6) *
+
+`[gallery category="term1,term2"]` 
 
 Its important to note that when passing the `'category'` parameter, the `[gallery]` shortcode will by default **ignore the current post
 and simply try to include all images from the category**. The syntax above will retrieve any images that are assigned 
@@ -50,7 +55,7 @@ Aside from this behavior, the [gallery] shortcode should behave exactly as it do
 The `id` parameter will behave as normal when the `category` parameter is not invoked.
 For more information on using the built-in [gallery shortcode checkout the codex page](http://codex.wordpress.org/Gallery_Shortcode).
 
-
+You can also use `[media_gallery]` instead of `[gallery]`, which maybe necessary in some circumstances where other plugins in use are also manipulating the standard `[gallery]` shortcode. See more in the Troubleshooting section. Don't worry though, both `[media_gallery]` and `[gallery]` do exactly the same thing.
 
 = Other Taxonomy Shortcode Usage =
 
@@ -66,7 +71,7 @@ OR
 
 *[Warning: nerdy developer stuff ahead]*
 
-== Multiple Taxonomy Metaboxes  *NEW!* ==
+== Multiple Media Taxonomies  *NEW!* ==
 
 Since 1.4 this plugin allows developers to create metaboxes for any number of taxonomies. While previous the previous version allowed 
 developers to change the taxonomy being used, it still only allowed a single taxonomy metabox to be generated. With 1.4, that has changed.
@@ -74,14 +79,58 @@ developers to change the taxonomy being used, it still only allowed a single tax
 All a developer needs to do, is create a new instance of the Media_Categories class and pass their desired taxonomy as an argument.
 
 `
-$my_custom_media_metabox = new Media_Categories('my_custom_taxonomy');
+$my_media_taxonomy = new Media_Categories('my_custom_taxonomy');
 `
 
 Thats it!, nothing else to it, the plugin will take care of the rest. You can create as many instances as you like - just make sure to be careful
 when doing this in conjunction with the `mc_taxonomy` filter - always check the current taxonomy.
 
-Obviously this works with any taxonomy, including built-in taxonomies such as 'post_tag', 'link_categories', 
-and yes, even 'nav_menu'. I'll leave it to you developers out uses for that.
+This works with any taxonomy, including built-in taxonomies such as 'post_tag', 'link_categories', 
+and yes, even 'nav_menu'. I'll leave it to you developers to find uses for that.
+
+
+== Troubleshooting ==
+
+= Gallery Shortcode Conflicts =
+
+If you have any other plugins that modify the gallery shortcode, then that plugin and this one will conflict - only one will work because they both try to override the built in `[gallery]` shortcode. As a workaround, stick to using `[media_gallery]` for this plugin - then put the following somwehere in your theme functions.php file.
+
+`
+//Disabling the Media Categories plugins ability to override the default [gallery] shortcode
+global $mc_media_categories;
+$mc_media_categories->override_default_gallery = false;
+`
+This will stop Media Categories from messing with the default shortcode, leaving the other plugin to do what it likes - and this plugin to use only `[media_gallery]`. The `[media_gallery]` shortcode works in exactly the same way as the the default does.
+
+https://github.com/eddiemoya/Media-Categories/issues/10
+
+= How to query for attachments =
+
+I've had many reports from people confused as to why WP_Query doesnt return attachments. There might be a number of reasons depending on your situtation, but I believe the most common and most confusing is the `post_status` settings for attachment being different than those for posts. By default, WP_Query always assumes the post_status is 'published' unless you specify otherwise - but attachments never have that as a status. They are set to 'inherit'.
+
+Here is an example of how change a category archive page to only return attachments.
+
+`
+add_action( 'pre_get_posts', 'category_attachments' );
+
+function category_attachments( $wp_query ) {
+
+	//If is category archive...
+    if ( $wp_query->is_category() ) {
+
+    	//Set the post_type to attachement
+        $wp_query->set( 'post_type', 'attachment' );
+
+        //Set the post_status to inherit
+    	$wp_query->set( 'post_status', 'inherit');
+    }
+
+    return $wp_query;
+}
+`
+
+Geneally speaking, theres nothing special this plugin does to help the theme "get" categorized media except for the gallery shortcode. So anything thats not working is going to be something weird going on with WordPress core where it's treating attachments differently than posts - which happens a lot.
+
 
 
 == Taxonomy Filter Usage: 'mc_taxonomy'  ==
@@ -143,17 +192,15 @@ consent, and a few modifications from that plugin. To enable this feature on all
 
 = Can this plugin work with a custom taxonomy, or a built-in taxonomy other than Categories? =
 
-Yes, modify the taxonomy used by a metabox by making use of the `mc_taxonomy` filter.
-They can also create additional metaboxes for other taxonomies by creating new instances
-of the Media_Categories class.
+Yes, by default this plugin enables the `category` taxonomy for media, but you can turn that off by making use of the `mc_taxonomy` filter.
+You can then enable any taxonomy, custom or built-in, by creating a new instance of the Media_Categories() class and passing the taxonomy as the first paramater.
 
 See the 'Multiple Taxonomy Metaboxes' section (a.k.a 'Other Notes') for more details on how
 this is done.
 
-= Can any of this customization explained above be done without writing any code? =
+= Can any of this be done without writing any code? =
 
-No. Currently there is no way to change the taxonomy, or create additional taxonomy metaboxes
-in the Media Library without adding a little bit of PHP (preferably to you theme).
+Only the use of `[gallery]` or `[media_gallery]' can be done out of the box. Currently there is no way to change the taxonomies used, or create additional taxonomy metaboxes in the Media Library without adding a little bit of PHP (preferably to you theme).
 
 Have no fear however, I do have intentions to add magical plugin options pages to allow
 as much as possible to be done without development - sorry but I have no timeline for when this
@@ -161,23 +208,26 @@ might happen.
 
 = Is there any way to see all the attachment/media items associated to a category/taxonomy term, the way we can with Posts? =
 
-In WordPress 3.5, you can now see any taxonomy enabled for attachments the same way you see Categories for Posts. For earlier versions, I'm afraid the answer is no.
+Yes! This was a frequent feature request, and in version Media Categories 1.6 this is finally available! Just go to the Media Library, the dropdown will be right there at the top.
 
 = I found a bug, or I would like to suggest/request a feature, can I submit it? =
 
 Of course, thats great! I love hearing how people want to use my plugins, and if you look though my blog or
-this plugins support forum, you'll see I have a tendency of fulfilling people's requests ( but no promises :p )
+this plugins support forum, you'll see I have a tendency of fulfilling people's requests ( but no promises :p ).
 
 Bug reports are extremely helpful! Most of my plugins have been developed while at work, and publicly submitted bug reports help
 prove the point that Open Source is the way to go. It amounts to free public quality assurance testing. So please please please report
-any bugs to you see. Preferably on the WordPress plugin directory, but if you feel so inclined you may report them on my blog http:://eddiemoya.com
+any bugs to you see. Preferably on the WordPress plugin directory, but if you feel so inclined you may report them on my blog http://eddiemoya.com
+
+Note: Your bug reports and feature requests have a much higher likelihood of getting my attention if you submit them to the [GitHub Issues](https://github.com/eddiemoya/Media-Categories/issues)
 
 
 == Changelog ==
 
-== 1.6 ==
-* New Feature - Filter Media Library admin page by taxonomy term with taxonomy dropdown menu
-* New Feature - Filter taxonomy terms using "Searchable Categories" style taxonomy metaboxes are now in the real metaboxes as well as the Media Modal Faux metaboxes.
+= 1.6 =
+* New Feature - Filter media in the Media Library by term with new dropdropdown menu.
+* New Feature - Filter taxonomy terms in metaboxes - "Searchable Categories" style taxonomy metaboxes are back in the real metaboxes as well as the Media Modal Faux metaboxes.
+* Bugfix - Gallery shortcode conflicts with other plugins that also modify the gallery shortcode (JetPack). This fix leaves the [gallery] shortcode available, but allows developers to turn to use [media_gallery] instead - and even disable the [gallery] so it doesnt blow up other plugins. https://github.com/eddiemoya/Media-Categories/issues/10
 * Bugfix - Toggle buttons for taxonomy boxes on media modal would toggle all taxonomy areas instead of just the one you clicked. https://github.com/eddiemoya/Media-Categories/issues/13
 
 = 1.5 =
@@ -214,6 +264,9 @@ any bugs to you see. Preferably on the WordPress plugin directory, but if you fe
 * Initial commit.
 
 == Upgrade Notice ==
+
+= 1.6 =
+Update for WordPress 3.8 compatibility. Multiple bug fixes, several great new features!
 
 = 1.5 =
 Update for WordPress 3.5 compatibility, and important bug fixes for all versions of WordPress
