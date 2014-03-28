@@ -7,8 +7,8 @@ Author: Eddie Moya
 Author URL: http://eddiemoya.com
 */
 
-require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.5/filterable-taxonomy-meta-box.php');
-require_once(plugin_dir_path(__FILE__) . 'metaboxes/3.4/filterable-taxonomy-meta-box.php');
+require_once(plugin_dir_path(__FILE__) . 'metaboxes/filterable-taxonomy-faux-metabox.php');
+require_once(plugin_dir_path(__FILE__) . 'metaboxes/filterable-taxonomy-metabox.php');
 
 class Media_Categories {
     public static $version = 1.5;

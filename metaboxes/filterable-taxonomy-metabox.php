@@ -1,6 +1,6 @@
 <?php 
 
-require_once(plugin_dir_path(dirname(__FILE__)). 'abstract-metabox.php');
+require_once(plugin_dir_path(__FILE__). 'abstract-metabox.php');
 
 class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
 
@@ -37,7 +37,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
      */
     function taxonomy_meta_box($post, $box) {
 
-        require_once(plugin_dir_path(dirname(dirname(__FILE__))) . 'walkers/attachment-walker-category-checklist-class.php');
+        require_once(plugin_dir_path(dirname(__FILE__)) . 'walkers/attachment-walker-category-checklist-class.php');
             
             $defaults = array('taxonomy' => 'category');
         if ( !isset($box['args']) || !is_array($box['args']) )
