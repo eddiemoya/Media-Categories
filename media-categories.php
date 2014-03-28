@@ -346,25 +346,39 @@ class Media_Categories {
 
         $terms = get_terms($this->taxonomy);
         $walker = new SH_Walker_TaxonomyDropdown();
+
+        if ('category' == $this->taxonomy) {
+            $name = 'cat';
+            $value = 'id';
+
+        } else {
+            $name = $this->taxonomy;
+            $value = 'slug';
+        }
       
         if ($pagenow=='upload.php' && !empty($terms)) {
 
             $taxonomy = get_taxonomy($this->taxonomy);
-            return wp_dropdown_categories(array(
+            $dropdown_args = array(
                 'show_option_all' =>  __("Show All {$taxonomy->label}"),
                 'taxonomy'        =>  $this->taxonomy,
-                'name'            =>  $this->taxonomy,
+                'name'            =>  $name,
                 'orderby'         =>  'name',
-                'selected'        =>  $wp_query->query[$this->taxonomy],
                 'hierarchical'    =>  true,
                 'depth'           =>  3,
                 'show_count'      =>  true, // Show # listings in parens
                 'hide_empty'      =>  true, // Don't show businesses w/o listings
                 'hide_if_empty'   =>  true,
-                'walker'          =>  $walker
-            ));
-        }
+                'walker'          =>  $walker,
+                'value'           =>  $value
+            );
 
+            if (isset($wp_query->query[$this->taxonomy])){
+                $dropdown_args['selected'] = $wp_query->query[$this->taxonomy];
+            }
+
+            return wp_dropdown_categories($dropdown_args);
+        }
     }
             
 }

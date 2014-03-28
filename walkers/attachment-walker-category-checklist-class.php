@@ -24,17 +24,11 @@ class Attachment_Walker_Category_Checklist extends Walker{
 		else
 			$name = 'tax_input['.$taxonomy.']';
 
-		if( !isset($args['value_field']) ){
-            $args['value_field'] = ( $category->taxonomy != 'category') ? 'slug' : 'id';
-        }
- 
-        $value = ($args['value_field']=='slug') ? $category->slug : $category->term_id;
-
 		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
         
         //This line is the only part I really needed to change from the original walker, and its the only reason I had to create a custom metabox
         //Not only that, but all i needed to do was change value="' . $category->term_id . '" to value="' . $category->slug . '"
-		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $value . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
+		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->slug . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
 	}
 
 	function end_el(&$output, $category, $depth, $args) {
