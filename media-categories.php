@@ -13,21 +13,33 @@ require_once(plugin_dir_path(__FILE__) . 'metaboxes/filterable-taxonomy-metabox.
 class Media_Categories {
     public static $version = 1.5;
     public static $instances;
+    public $override_default_gallery;
     public $taxonomy;
     
     /**
      * While normally run statically, this allows 
      * @param type $taxonomy 
      */
-    public function __construct($taxonomy) {
-        global $wp_version;
+    public function __construct($taxonomy, $args = array()) {
 
         // Store each instance of this class (for use when localizing scripts)
         $this->taxonomy = $taxonomy;
         self::$instances[] = $this;
+
+        //Todo: $args should have a default and then be array merged.
+        if(isset($args['override_default_gallery'])){
+            $this->override_default_gallery = $args['override_default_gallery'];
+        }
+
+        $this->setup();
+    }
+
+    public function setup(){
+        global $wp_version;
         
         add_action('init', array(&$this, 'register_media_categories'));
-        add_action('init', array(&$this, 'custom_gallery_shortcode'));
+        add_action('init', array(&$this, 'taxonomy_gallery_shortcode'));
+        add_action('init', array(&$this, 'default_gallery_shortcode')); // For backward compatibility only!
         
         // In < 3.5 this is used for the main metabox on media admin pages - because normal metaboxes were not available
         // In 3.5 > This is used soley for the Media Modal right rail. Where there is also no normal metabox availability
@@ -56,10 +68,6 @@ class Media_Categories {
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
         }
-        
-
-        
-
     }
 
     /**
@@ -113,9 +121,16 @@ class Media_Categories {
 
 
 
-    function custom_gallery_shortcode(){
-        remove_shortcode('gallery');
-        add_shortcode('gallery', array(&$this,'gallery_shortcode'));
+    function default_gallery_shortcode(){
+        if($this->override_default_gallery === true){   
+            remove_shortcode('gallery');
+            add_shortcode('gallery', array(&$this,'gallery_shortcode'));  
+        }
+
+    }
+
+    function taxonomy_gallery_shortcode(){ 
+        add_shortcode('media_gallery', array(&$this,'gallery_shortcode'));
     }
     
     /**
@@ -386,4 +401,5 @@ class Media_Categories {
             
 }
 
-$mc_category_metabox = new Media_Categories('category');
+global $mc_media_categories;
+$mc_media_categories = new Media_Categories('category');
