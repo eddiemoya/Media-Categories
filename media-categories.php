@@ -370,4 +370,3 @@ class Media_Categories {
 }
 
 $mc_category_metabox = new Media_Categories('category');
-$mc_category_metabox = new Media_Categories('skcategory');
