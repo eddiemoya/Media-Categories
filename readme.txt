@@ -227,6 +227,7 @@ Note: Your bug reports and feature requests have a much higher likelihood of get
 = 1.6 =
 * New Feature - Filter media in the Media Library by term with new dropdropdown menu.
 * New Feature - Filter taxonomy terms in metaboxes - "Searchable Categories" style taxonomy metaboxes are back in the real metaboxes as well as the Media Modal Faux metaboxes.
+* New Feature - Taxonomy columns in Media Library are now sortable by clicking on the column header.
 * Bugfix - Gallery shortcode conflicts with other plugins that also modify the gallery shortcode (JetPack). This fix leaves the [gallery] shortcode available, but allows developers to turn to use [media_gallery] instead - and even disable the [gallery] so it doesnt blow up other plugins. https://github.com/eddiemoya/Media-Categories/issues/10
 * Bugfix - Toggle buttons for taxonomy boxes on media modal would toggle all taxonomy areas instead of just the one you clicked. https://github.com/eddiemoya/Media-Categories/issues/13
 
