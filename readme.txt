@@ -20,7 +20,7 @@ The "Filter Categories" field allows you to narrow your search for a category as
 Since WordPress 3.5 now supports attachment taxonomy, the work of adding a metabox to the attachment editor is happening entirely inside of WordPress. This is great, and we now have true metaboxes for taxonomy - they core team has also accepted my patches which caused several headaches for this plugin. Media Categories 1.5 takes advantage of the new Media Modal - with this plugin, you can now edit a images categories directly from the modal screen. I've also fixed some long standing bugs with the shortcode gallery functionality.
 
 = Updates =
-* Since version 1.6 : Supports WordPress 3.8.x * Reintroduces the category filter on metaboxes * Adds drowndown filters in the Media Library * Gallery Shortcode now accepts multiple terms.
+* Since version 1.6 : Supports WordPress 3.8.x * Reintroduces the category filter on metaboxes * Adds drowndown filters and sortable columns in the Media Library * Gallery Shortcode now accepts multiple terms.
 * Since version 1.5 : Supports the new WordPress 3.5 by adding the metabox to the new Media Modal. Also fixed bugs in the gallery shorcode behavior. All while still supporting 3.3.x - 3.4.x
 * Since version 1.4 : This plugin allows for **multiple metaboxes** to be created for any number of taxonomies.
 * Since version 1.3 : A **filter** has been added to allow developers to modify which taxonomy is being used. See 'Other Notes' > 'Taxonomy Filter Usage' for details
@@ -225,6 +225,7 @@ Note: Your bug reports and feature requests have a much higher likelihood of get
 == Changelog ==
 
 = 1.6 =
+* Updated for WordPress 3.8 - improvements made across the board.
 * New Feature - Filter media in the Media Library by term with new dropdropdown menu.
 * New Feature - Filter taxonomy terms in metaboxes - "Searchable Categories" style taxonomy metaboxes are back in the real metaboxes as well as the Media Modal Faux metaboxes.
 * New Feature - Taxonomy columns in Media Library are now sortable by clicking on the column header.
