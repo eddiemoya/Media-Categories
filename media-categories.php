@@ -481,8 +481,8 @@ class Media_Categories {
                 'orderby'         =>  'name',
                 'hierarchical'    =>  true,
                 'depth'           =>  3,
-                'show_count'      =>  true, // Show # listings in parens
-                'hide_empty'      =>  true, // Don't show businesses w/o listings
+                'show_count'      =>  true,
+                'hide_empty'      =>  true,
                 'hide_if_empty'   =>  true,
                 'walker'          =>  $walker,
                 'value'           =>  $value
@@ -515,4 +515,3 @@ class Media_Categories {
 
 global $mc_media_categories;
 $mc_media_categories = new Media_Categories('category');
-
