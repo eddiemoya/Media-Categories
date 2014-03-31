@@ -51,6 +51,9 @@ class Media_Categories {
         add_action('init', array(&$this, 'taxonomy_gallery_shortcode'));
         add_action('init', array(&$this, 'default_gallery_shortcode')); // For backward compatibility only!
 
+        // Sort by taxonomy (for sortable columns in the Media Library)
+        add_filter( 'posts_clauses', array(&$this, 'query_order_by_taxonomy'), 10, 2 );
+
         //Query Attachments
         add_filter('ajax_query_attachments_args', array(__CLASS__, 'query_attachments'));
 
@@ -510,7 +513,34 @@ class Media_Categories {
 
         return $columns;
     }
-            
+
+    /**
+     * Adds to WP_Query the ability to be sorted by taxonomy terms
+     *
+     * @link http://scribu.net/wordpress/sortable-taxonomy-columns.html
+     *
+     * @param WP_Query $wp_query - The current query.
+     * @param array $clauses - The current clauses in the SQL
+     *
+     * @return array $clauses - Modified set of clauses.
+     */
+    public function query_order_by_taxonomy( $clauses, $wp_query ) {
+        global $wpdb;
+
+        if ( isset( $wp_query->query['orderby'] ) && $this->taxonomy == $wp_query->query['orderby'] ) {
+
+            $clauses['join'] .= "
+                LEFT OUTER JOIN {$wpdb->term_relationships} ON {$wpdb->posts}.ID={$wpdb->term_relationships}.object_id
+                LEFT OUTER JOIN {$wpdb->term_taxonomy} USING (term_taxonomy_id)
+                LEFT OUTER JOIN {$wpdb->terms} USING (term_id)";
+
+            $clauses['where'] .= " AND (taxonomy = '{$this->taxonomy}' OR taxonomy IS NULL)";
+            $clauses['groupby'] = "object_id";
+            $clauses['orderby']  = "GROUP_CONCAT({$wpdb->terms}.name ORDER BY name ASC) ";
+            $clauses['orderby'] .= ( 'ASC' == strtoupper( $wp_query->get('order') ) ) ? 'ASC' : 'DESC';
+        }
+        return $clauses;
+    }        
 }
 
 global $mc_media_categories;
