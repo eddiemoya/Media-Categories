@@ -35,7 +35,57 @@ jQuery(document).ready(function($){
             });
         }
 
+
+    wp.media.view.AttachmentFilters.TaxonomyFilter = wp.media.view.AttachmentFilters.extend({
+        createFilters: function() {
+            var filters = {};
+
+            _.each( terms[this.options.taxonomy] || {}, function( term ) {
+                //console.log(term);
+                filters[ term.slug ] = {
+                    text: term.name,
+                    props: {
+                        tax_query: 
+                        [
+                            {
+                                taxonomy: term.taxonomy,
+                                field: 'id',
+                                terms: term.term_id 
+                            }, //This nested structure will be useful later if I want to have multi-tax filtering
+                        ]
+                    }
+                };
+            });
+            this.filters = filters;
+        }
+    });
+
     $.each(taxonomy, function(index, tax){
+
+        /**
+         * Replace the media-toolbar with our own
+         */
+        var mc_filter = wp.media.view.AttachmentsBrowser;
+
+        wp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
+        createToolbar: function() {
+
+           // wp.media.model.Query.defaultArgs.filterSource = 'media-categories-filter_' + tax;
+
+            mc_filter.prototype.createToolbar.apply(this,arguments);
+
+            this.toolbar.set( tax, new wp.media.view.AttachmentFilters.TaxonomyFilter({
+                controller: this.controller,
+                model:      this.collection.props,
+                priority:   -80,
+                taxonomy: tax,
+                className: 'media-categories-filter_' + tax
+            }).render('taxonomy') );
+        }
+    });
+
+
+
 
         var input_class = '.compat-field-'+tax;
         var metabox_class = input_class+'_metabox';
