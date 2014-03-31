@@ -53,9 +53,18 @@ jQuery(document).ready(function($){
                                 terms: term.term_id 
                             }, //This nested structure will be useful later if I want to have multi-tax filtering
                         ]
-                    }
+                    } 
                 };
             });
+
+            filters.all = {
+                text:  'Select '+ this.options.taxonomy,
+                props: {
+                    orderby: 'date',
+                    order:   'DESC'
+                },
+                priority: 10
+            };
             this.filters = filters;
         }
     });
