@@ -68,24 +68,19 @@ jQuery(document).ready(function($){
         var mc_filter = wp.media.view.AttachmentsBrowser;
 
         wp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
-        createToolbar: function() {
+            createToolbar: function() {
 
-           // wp.media.model.Query.defaultArgs.filterSource = 'media-categories-filter_' + tax;
+                mc_filter.prototype.createToolbar.apply(this,arguments);
 
-            mc_filter.prototype.createToolbar.apply(this,arguments);
-
-            this.toolbar.set( tax, new wp.media.view.AttachmentFilters.TaxonomyFilter({
-                controller: this.controller,
-                model:      this.collection.props,
-                priority:   -80,
-                taxonomy: tax,
-                className: 'media-categories-filter_' + tax
-            }).render('taxonomy') );
-        }
-    });
-
-
-
+                this.toolbar.set( tax, new wp.media.view.AttachmentFilters.TaxonomyFilter({
+                    controller: this.controller,
+                    model:      this.collection.props,
+                    priority:   -80,
+                    taxonomy: tax,
+                    className: 'media-categories-filter_' + tax
+                }).render('taxonomy') );
+            }
+        });
 
         var input_class = '.compat-field-'+tax;
         var metabox_class = input_class+'_metabox';
@@ -107,7 +102,6 @@ jQuery(document).ready(function($){
                 metabox_container.find('.arrow-up').attr('class', 'arrow-down');
                 wp.media.view.AttachmentCompat.prototype.metabox_status = 'closed';
             }
-
         }
 
         $('.compat-attachment-fields').live('modal-refreshed', function(){
@@ -167,11 +161,8 @@ jQuery(document).ready(function($){
 
             selector_context = ('attachment' != pagenow) ? '.media-sidebar ' : '';
                   
-
             var val = this.value; 
             var lis = $(selector_context + "#"+ tax +"checklist li");
-
-
 
             if(val.length > 0){
                 lis.hide();
