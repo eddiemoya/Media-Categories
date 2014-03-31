@@ -484,8 +484,8 @@ class Media_Categories {
                 'orderby'         =>  'name',
                 'hierarchical'    =>  true,
                 'depth'           =>  3,
-                'show_count'      =>  true,
-                'hide_empty'      =>  true,
+                'show_count'      =>  false,
+                'hide_empty'      =>  false,
                 'hide_if_empty'   =>  true,
                 'walker'          =>  $walker,
                 'value'           =>  $value
@@ -530,12 +530,12 @@ class Media_Categories {
         if ( isset( $wp_query->query['orderby'] ) && $this->taxonomy == $wp_query->query['orderby'] ) {
 
             $clauses['join'] .= "
-                LEFT OUTER JOIN {$wpdb->term_relationships} ON {$wpdb->posts}.ID={$wpdb->term_relationships}.object_id
-                LEFT OUTER JOIN {$wpdb->term_taxonomy} USING (term_taxonomy_id)
+                LEFT OUTER JOIN {$wpdb->term_relationships} as tr ON {$wpdb->posts}.ID=tr.object_id
+                LEFT OUTER JOIN {$wpdb->term_taxonomy} as tt ON (tt.term_taxonomy_id = tt.term_taxonomy_id)
                 LEFT OUTER JOIN {$wpdb->terms} USING (term_id)";
 
             $clauses['where'] .= " AND (taxonomy = '{$this->taxonomy}' OR taxonomy IS NULL)";
-            $clauses['groupby'] = "object_id";
+            $clauses['groupby'] = "tr.object_id";
             $clauses['orderby']  = "GROUP_CONCAT({$wpdb->terms}.name ORDER BY name ASC) ";
             $clauses['orderby'] .= ( 'ASC' == strtoupper( $wp_query->get('order') ) ) ? 'ASC' : 'DESC';
         }
