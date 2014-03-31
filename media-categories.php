@@ -78,9 +78,8 @@ class Media_Categories {
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
             add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
 
-
-            add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
-            add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
+            // add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
+            // add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
         }
     }
 
