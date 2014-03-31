@@ -17,8 +17,10 @@ class Media_Categories {
     public $taxonomy;
     
     /**
-     * While normally run statically, this allows 
+     * Start your engines.
+     *
      * @param type $taxonomy 
+     * @return void 
      */
     public function __construct($taxonomy, $args = array()) {
 
@@ -36,6 +38,12 @@ class Media_Categories {
         $this->setup();
     }
 
+    /**
+     * Hooks are evil.
+     * 
+     * @since 1.6
+     * @return void
+     */
     public function setup(){
         global $wp_version;
         
@@ -78,6 +86,10 @@ class Media_Categories {
 
     /**
      * Enqueue javascript
+     *
+     * @return void
+     *
+     * @todo Requires clean up = no need for both $tax and $terms to be localized. Just being lazy.
      */
     function enqueue_media_categories_scripts() {
         global $wp_version;
@@ -138,6 +150,8 @@ class Media_Categories {
      * This adds native support for categories to the attachment editor, however
      * instead of the standard metabox wordpress only provides a text area wich
      * the user would have to type slugs.
+     *     
+     * @return void
      */
     function register_media_categories() {
         $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
@@ -146,7 +160,13 @@ class Media_Categories {
     }
 
 
-
+    /**
+     * If $this->override_default_gallery is set to true, this function
+     * removes the default gallery shortcode and subitutes ours.
+     *
+     * @since 1.6
+     * @return void
+     */
     function default_gallery_shortcode(){
         if($this->override_default_gallery === true){   
             remove_shortcode('gallery');
@@ -155,6 +175,12 @@ class Media_Categories {
 
     }
 
+    /**
+     * Adds a custom shortcode gallery
+     *
+     * @since 1.6
+     * @return void      
+     */
     function taxonomy_gallery_shortcode(){ 
         add_shortcode('media_gallery', array(&$this,'gallery_shortcode'));
     }
@@ -423,6 +449,10 @@ class Media_Categories {
 
     /**
      * This method generates a dropdown to filter items on the Media Library page.
+     *
+     * @since 1.6
+     * @return void
+     *
      **/    
     public function restrict_manage_attachments() {
         global $pagenow;
@@ -467,6 +497,13 @@ class Media_Categories {
         }
     }
 
+    /**
+     * Adds taxonomy column to the list of columns that should be sortable.
+     *
+     * @since 1.6
+     * @param array $columns - Existing sortable columns
+     * @return $array - modified list of sortable columns
+     */
     public function sortable_columns( $columns ) {
        
         $column_id = ('category' == $this->taxonomy) ? 'categories' : 'taxonomy-'.$this->taxonomy;
@@ -479,7 +516,4 @@ class Media_Categories {
 
 global $mc_media_categories;
 $mc_media_categories = new Media_Categories('category');
-
-
-
 

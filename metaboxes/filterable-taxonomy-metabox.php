@@ -7,6 +7,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
     /**
      * Here I insert a custom form field into the media editor, but instead of
      * a normal textfield, I capture the output of a custom metabox and insert it.
+     * @todo This function should be checking to see if the taxonomy is hierarchical
      */
     public function add_taxonomy_meta_box($post, $box = null) {
 
