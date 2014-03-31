@@ -58,7 +58,7 @@ jQuery(document).ready(function($){
             });
 
             filters.all = {
-                text:  'Select '+ this.options.taxonomy,
+                text:  'Show All '+ this.options.taxonomy,
                 props: {
                     tax_query: null,
                     orderby: 'date',

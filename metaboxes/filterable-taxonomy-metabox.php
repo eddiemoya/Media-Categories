@@ -53,7 +53,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
         <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">
             <div class="taxonomy-metabox-field-container">
                <!--  <label class='category-filter' for="category-filter">Search <?php echo $tax->labels->name; ?>:</label> -->
-                <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' placeholder="Filter <?php echo $tax->labels->name; ?>" />
+                <input id='<?php echo $taxonomy?>-search' name="category-filter" type='text' placeholder="Type to Filter <?php echo $tax->labels->name; ?>" />
             </div>
             <ul id="<?php echo $taxonomy; ?>-tabs" class="category-tabs">
                 <li class="tabs"><a href="#<?php echo $taxonomy; ?>-all"><?php echo $tax->labels->all_items; ?></a></li>
