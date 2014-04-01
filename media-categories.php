@@ -93,7 +93,7 @@ class Media_Categories {
      *
      * @todo Requires clean up = no need for both $tax and $terms to be localized. Just being lazy.
      */
-    function enqueue_media_categories_scripts() {
+    public static function enqueue_media_categories_scripts() {
         global $wp_version;
 
         if (is_admin()) {
@@ -136,7 +136,7 @@ class Media_Categories {
     /**
      * @return void
      */
-    function enqueue_media_categories_styles() {
+    public static function enqueue_media_categories_styles() {
         global $wp_version;
 
         if (is_admin()) { 
@@ -155,7 +155,7 @@ class Media_Categories {
      *     
      * @return void
      */
-    function register_media_categories() {
+    public function register_media_categories() {
         $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
         
         register_taxonomy_for_object_type($tax_name, 'attachment');
@@ -169,7 +169,7 @@ class Media_Categories {
      * @since 1.6
      * @return void
      */
-    function default_gallery_shortcode(){
+    public function default_gallery_shortcode(){
         if($this->override_default_gallery === true){   
             remove_shortcode('gallery');
             add_shortcode('gallery', array(&$this,'gallery_shortcode'));  
@@ -183,7 +183,7 @@ class Media_Categories {
      * @since 1.6
      * @return void      
      */
-    function taxonomy_gallery_shortcode(){ 
+    public function taxonomy_gallery_shortcode(){ 
         add_shortcode('media_gallery', array(&$this,'gallery_shortcode'));
     }
     
@@ -202,7 +202,7 @@ class Media_Categories {
      * @param array $attr Attributes of the shortcode.
      * @return string HTML content to display gallery.
      */
-    function gallery_shortcode($attr) {
+    public function gallery_shortcode($attr) {
         global $wp_version;
 
         // Could probably just leave it as get_post(), but i'm being lazy and don't feel like testing to be sure - so im putting in this logic to avoid any possible problem.
@@ -378,7 +378,7 @@ class Media_Categories {
      * @param type $post
      * @return type 
      */
-    function get_attachment_fields_to_edit($form_fields, $post) {
+    public function get_attachment_fields_to_edit($form_fields, $post) {
 
         foreach (get_attachment_taxonomies($post) as $taxonomy) {
             $t = (array) get_taxonomy($taxonomy);
@@ -417,7 +417,7 @@ class Media_Categories {
      * @return array - Returns an array of all the terms in the given taxonomy that have at least one post in any of the given post types.
      *
      **/
-    function get_non_empty_terms($taxonomy, $post_types = array() ){
+    public static function get_non_empty_terms($taxonomy, $post_types = array() ){
         global $wpdb;
 
         $post_types=(array) $post_types;
