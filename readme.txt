@@ -4,7 +4,7 @@ Donate link: http://eddiemoya.com
 Tags: media categories, media, category, categories, attachment categories, taxonomy, category metabox, metabox, admin, media library, media editor, attachment editor, attachment, images, gallery shortcode, gallery, shortcode, gallery category, filter, media taxonomy, post tags, modal, category filter
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 1.5
+Stable tag: 1.6-Beta
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
