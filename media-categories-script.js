@@ -135,7 +135,7 @@ jQuery(document).ready(function($){
                 else 
                     slug_list += $(this).val();
             });
-
+        
             form_fields.find("tr.compat-field-"+ tax +" > td.field > input.text").val(slug_list);
         });
     });
