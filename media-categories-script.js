@@ -87,7 +87,7 @@ jQuery(document).ready(function($){
                     model:      this.collection.props,
                     priority:   -80,
                     taxonomy: tax,
-                    className: 'media-categories-filter_' + tax
+                    className: 'attachment-filters'
                 }).render('taxonomy') );
             }
         });
