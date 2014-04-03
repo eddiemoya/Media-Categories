@@ -531,7 +531,7 @@ class Media_Categories {
 
             $clauses['join'] .= "
                 LEFT OUTER JOIN {$wpdb->term_relationships} as tr ON {$wpdb->posts}.ID=tr.object_id
-                LEFT OUTER JOIN {$wpdb->term_taxonomy} as tt ON (tt.term_taxonomy_id = tt.term_taxonomy_id)
+                LEFT OUTER JOIN {$wpdb->term_taxonomy} as tt ON (tt.term_taxonomy_id = tr.term_taxonomy_id)
                 LEFT OUTER JOIN {$wpdb->terms} USING (term_id)";
 
             $clauses['where'] .= " AND (taxonomy = '{$this->taxonomy}' OR taxonomy IS NULL)";
