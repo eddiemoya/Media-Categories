@@ -36,10 +36,12 @@ jQuery(document).ready(function($){
         });
     }
 
+    // Creates the items in the Media Modal dropdown as well as the query they generate when selected.
     wp.media.view.AttachmentFilters.TaxonomyFilter = wp.media.view.AttachmentFilters.extend({
         createFilters: function() {
             var filters = {};
 
+            // Terms variable is grabbed from the global scope
             _.each( terms[this.options.taxonomy] || {}, function( term ) {
                 //console.log(term);
                 filters[ term.slug ] = {
@@ -96,13 +98,16 @@ jQuery(document).ready(function($){
     $('.compat-attachment-fields').live('modal-refreshed', function(event){
         event.stopPropagation();
 
+        // Hide the default text fields
         $.each(taxonomy, function(index, tax){
             $('.compat-field-'+tax).hide();
             $('.compat-field-'+tax+'_metabox').addClass('metabox_container');
         });
     
+        //Get the metabox_status array
         mbox_status = wp.media.view.AttachmentCompat.prototype.metabox_status;
  
+        // Iterate through each metabox and set its state.
         $.each(mbox_status, function(taxonomy, status){
 
             if(status == 'open'){
