@@ -119,7 +119,7 @@ class Media_Categories {
             wp_register_script('media_categories_metabox_script', plugins_url($filename, __FILE__));
             wp_enqueue_script('media_categories_metabox_script');
             
-            wp_localize_script('media_categories_metabox_script', 'taxonomy',  $tax);
+            wp_localize_script('media_categories_metabox_script', 'taxonomy',  $taxonomies);
             wp_localize_script('media_categories_metabox_script', 'terms',  $terms);
    
         }

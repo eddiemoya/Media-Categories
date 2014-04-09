@@ -13,7 +13,9 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
 
         $taxonomy = get_taxonomy($this->taxonomy);
 
-        remove_meta_box( $this->taxonomy.'div', 'attachment', 'side');
+        $metabox_slug = ($taxonomy->hierarchical) ? $this->taxonomy.'div' : 'tagsdiv-'.$this->taxonomy;
+
+        remove_meta_box( $metabox_slug, 'attachment', 'side');
         add_meta_box(
             $this->taxonomy.'div', 
             $taxonomy->labels->name, 
