@@ -23,7 +23,7 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
             'default', 
             array( 'taxonomy' => $this->taxonomy )
         );
-
+  
     }
 
     /**
@@ -36,18 +36,13 @@ class Filterable_Taxonomy_Metabox extends MC_Taxonomy_Metabox {
      * using ID's to using slugs.
      * 
      */
-    function taxonomy_meta_box($post, $box) {
+    function taxonomy_meta_box($post, $box = array()) {
 
         require_once(plugin_dir_path(dirname(__FILE__)) . 'walkers/attachment-walker-category-checklist-class.php');
             
-            $defaults = array('taxonomy' => 'category');
-        if ( !isset($box['args']) || !is_array($box['args']) )
-            $args = array();
-        else
-            $args = $box['args'];
-        extract( wp_parse_args($args, $defaults), EXTR_SKIP );
+        extract( $box['args'] );
 
-        $tax = get_taxonomy($taxonomy);
+        $tax = get_taxonomy($this->taxonomy);
 
         ?>
         <div id="taxonomy-<?php echo $taxonomy; ?>" class="categorydiv">

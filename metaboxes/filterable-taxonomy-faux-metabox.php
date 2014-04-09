@@ -14,7 +14,7 @@ class Filterable_Taxonomy_Faux_Metabox extends MC_Taxonomy_Metabox {
 
         require_once('./includes/meta-boxes.php');
         
-        $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
+        $tax_name = $this->taxonomy;
         $taxonomy = get_taxonomy($tax_name);
 
         ob_start();
@@ -51,7 +51,7 @@ class Filterable_Taxonomy_Faux_Metabox extends MC_Taxonomy_Metabox {
         
         require_once(plugin_dir_path(dirname(__FILE__)) . 'walkers/attachment-walker-category-checklist-class.php');
              
-        $defaults = array('taxonomy' => apply_filters('mc_taxonomy',$this->taxonomy));
+        $defaults = array('taxonomy' => $this->taxonomy);
         
         if (!isset($box['args']) || !is_array($box['args']))
             $args = array();

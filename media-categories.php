@@ -26,7 +26,6 @@ class Media_Categories {
 
         // Store each instance of this class (for use when localizing scripts)
         $this->taxonomy = $taxonomy;
-        self::$instances[] = $this;
 
         //Todo: $args should have a default and then be array merged.
         if(isset($args['override_default_gallery'])){
@@ -35,7 +34,15 @@ class Media_Categories {
             $this->override_default_gallery = true;
         }
 
-        $this->setup();
+        add_action('init', array(&$this, 'set_instances'), 8);
+        add_action('init', array(&$this, 'setup'),9);
+       // print_r($this);
+    }
+
+    function set_instances(){
+
+        $this->taxonomy = apply_filters('mc_taxonomy', $this->taxonomy);
+        self::$instances[] = $this;
     }
 
     /**
@@ -101,8 +108,8 @@ class Media_Categories {
             // Get each instance of this class, and pass each taxonomy in to javascript
             foreach (self::$instances as $instance){
 
-                $taxonomy = apply_filters('mc_taxonomy', $instance->taxonomy);
-                $tax[] = $taxonomy;
+                $taxonomy = $instance->taxonomy;
+                $taxonomies[] = $taxonomy;
                 $terms[$taxonomy] = self::get_non_empty_terms($taxonomy, array('attachment'));
              }
                 
@@ -156,9 +163,9 @@ class Media_Categories {
      * @return void
      */
     public function register_media_categories() {
-        $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
+        // $tax_name = apply_filters('mc_taxonomy', $this->taxonomy);
         
-        register_taxonomy_for_object_type($tax_name, 'attachment');
+        register_taxonomy_for_object_type($this->taxonomy, 'attachment');
     }
 
 
@@ -234,8 +241,9 @@ class Media_Categories {
                 unset( $attr['orderby'] );
         }
 
-        $mc_tax = apply_filters('mc_taxonomy', $this->taxonomy);
-        extract(shortcode_atts(array(
+        $mc_tax_list = array_fill_keys(wp_list_pluck(self::$instances, 'taxonomy'), '');
+
+        $ac_atts = array(
             'order'      => 'ASC',
             'orderby'    => 'menu_order ID',
             'id'         => $post->ID,
@@ -246,8 +254,11 @@ class Media_Categories {
             'size'       => 'thumbnail',
             'include'    => '',
             'exclude'    => '',
-            $mc_tax      => ''   
-        ), $attr));
+        ) + $mc_tax_list; 
+
+        extract(shortcode_atts(
+            $ac_atts, $attr
+        ));
         
         $id = intval($id);
         if ( 'RAND' == $order )
