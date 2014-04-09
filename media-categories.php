@@ -479,7 +479,7 @@ class Media_Categories {
 
         require_once(plugin_dir_path(__FILE__) . 'walkers/mc-walker-taxonomy-dropdown.php');
 
-        $terms = get_terms($this->taxonomy);
+        $terms = get_terms($this->taxonomy, array('hide_empty' => false));
         $walker = new SH_Walker_TaxonomyDropdown();
 
         if ('category' == $this->taxonomy) {

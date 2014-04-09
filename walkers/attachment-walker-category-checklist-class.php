@@ -4,15 +4,15 @@ class Attachment_Walker_Category_Checklist extends Walker{
 	var $tree_type = 'category';
 	var $db_fields = array ('parent' => 'parent', 'id' => 'term_id'); //TODO: decouple this
 
-	function start_lvl(&$output, $depth, $args) {
-		$indent = str_repeat("\t", $depth);
-		$output .= "$indent<ul class='children'>\n";
-	}
+	// function start_lvl(&$output, $depth, $args) {
+	// 	$indent = str_repeat("\t", $depth);
+	// 	$output .= "$indent<ul class='children'>\n";
+	// }
 
-	function end_lvl(&$output, $depth, $args) {
-		$indent = str_repeat("\t", $depth);
-		$output .= "$indent</ul>\n";
-	}
+	// function end_lvl(&$output, $depth, $args) {
+	// 	$indent = str_repeat("\t", $depth);
+	// 	$output .= "$indent</ul>\n";
+	// }
 
 	function start_el(&$output, $category, $depth, $args) {
 		extract($args);
