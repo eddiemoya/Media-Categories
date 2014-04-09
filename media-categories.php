@@ -266,106 +266,112 @@ class Media_Categories {
                 
         $tax_query = array();
 
-        if( !empty($$mc_tax) ){ 
-   
-            //Split the categories on commas into an array of categories
-            $term = explode(',',${$mc_tax});
-            $term_field = (is_numeric($term)) ? 'id' : 'slug';
-            $tax_query = array(
-                'tax_query' => array(
-                    array(
-                        'taxonomy' => $mc_tax, 
-                        'field' => $term_field, 
-                        'terms' => $term
-                    )
-                )
-            );
-              
+        foreach($mc_tax_list as $mc_tax => $nothing){
+
+            $tax_query['tax_query']['relation'] = 'OR';
+       
+            if(!empty(${$mc_tax})){
+
+                //Split the categories on commas into an array of categories
+                $terms = explode(',',${$mc_tax});
+                $term_field = (is_numeric($terms)) ? 'id' : 'slug';
+                $tax_query['tax_query'][] = array(
+                    'taxonomy' => $mc_tax, 
+                    'field' => $term_field, 
+                    'terms' => $terms
+                );
+            }
+                  
             if(!isset($attr['id']))
                 $id = '';
         }
         
-        if ( !empty($include) ) {
-            //$include = preg_replace( '/[^0-9,]+/', '', $include ); see: http://core.trac.wordpress.org/ticket/21827
-            $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
+        if(!empty($tax_query)){
+            
+            if ( !empty($include) ) {
+                //$include = preg_replace( '/[^0-9,]+/', '', $include ); see: http://core.trac.wordpress.org/ticket/21827
+                $_attachments = get_posts( array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
 
-            $attachments = array();
-            foreach ( $_attachments as $key => $val ) {
-                $attachments[$val->ID] = $_attachments[$key];
+                $attachments = array();
+                foreach ( $_attachments as $key => $val ) {
+                    $attachments[$val->ID] = $_attachments[$key];
+                }
+            } elseif ( !empty($exclude) ) {
+                //$exclude = preg_replace( '/[^0-9,]+/', '', $exclude ); see: http://core.trac.wordpress.org/ticket/21827
+                $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
+            } else {
+                $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
             }
-        } elseif ( !empty($exclude) ) {
-            //$exclude = preg_replace( '/[^0-9,]+/', '', $exclude ); see: http://core.trac.wordpress.org/ticket/21827
-            $attachments = get_children( array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
-        } else {
-            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby) + $tax_query );
-        }
 
-        if ( empty($attachments) )
-            return '';
+            if ( empty($attachments) )
+                return '';
 
-        if ( is_feed() ) {
-            $output = "\n";
-            foreach ( $attachments as $att_id => $attachment )
-                $output .= wp_get_attachment_link($att_id, $size, true) . "\n";
-            return $output;
-        }
+            if ( is_feed() ) {
+                $output = "\n";
+                foreach ( $attachments as $att_id => $attachment )
+                    $output .= wp_get_attachment_link($att_id, $size, true) . "\n";
+                return $output;
+            }
 
-        $itemtag = tag_escape($itemtag);
-        $captiontag = tag_escape($captiontag);
-        $columns = intval($columns);
-        $itemwidth = $columns > 0 ? floor(100/$columns) : 100;
-        $float = is_rtl() ? 'right' : 'left';
+            $itemtag = tag_escape($itemtag);
+            $captiontag = tag_escape($captiontag);
+            $columns = intval($columns);
+            $itemwidth = $columns > 0 ? floor(100/$columns) : 100;
+            $float = is_rtl() ? 'right' : 'left';
 
-        $selector = "gallery-{$instance}";
+            $selector = "gallery-{$instance}";
 
-        $gallery_style = $gallery_div = '';
-        if ( apply_filters( 'use_default_gallery_style', true ) )
-            $gallery_style = "
-            <style type='text/css'>
-                #{$selector} {
-                    margin: auto;
-                }
-                #{$selector} .gallery-item {
-                    float: {$float};
-                    margin-top: 10px;
-                    text-align: center;
-                    width: {$itemwidth}%;
-                }
-                #{$selector} img {
-                    border: 2px solid #cfcfcf;
-                }
-                #{$selector} .gallery-caption {
-                    margin-left: 0;
-                }
-            </style>
-            <!-- see gallery_shortcode() in wp-includes/media.php -->";
-        $size_class = sanitize_html_class( $size );
-        $gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
-        $output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
+            $gallery_style = $gallery_div = '';
+            if ( apply_filters( 'use_default_gallery_style', true ) )
+                $gallery_style = "
+                <style type='text/css'>
+                    #{$selector} {
+                        margin: auto;
+                    }
+                    #{$selector} .gallery-item {
+                        float: {$float};
+                        margin-top: 10px;
+                        text-align: center;
+                        width: {$itemwidth}%;
+                    }
+                    #{$selector} img {
+                        border: 2px solid #cfcfcf;
+                    }
+                    #{$selector} .gallery-caption {
+                        margin-left: 0;
+                    }
+                </style>
+                <!-- see gallery_shortcode() in wp-includes/media.php -->";
+            $size_class = sanitize_html_class( $size );
+            $gallery_div = "<div id='$selector' class='gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}'>";
+            $output = apply_filters( 'gallery_style', $gallery_style . "\n\t\t" . $gallery_div );
 
-        $i = 0;
-        foreach ( $attachments as $id => $attachment ) {
-            $link = isset($attr['link']) && 'file' == $attr['link'] ? wp_get_attachment_link($id, $size, false, false) : wp_get_attachment_link($id, $size, true, false);
+            $i = 0;
+            foreach ( $attachments as $id => $attachment ) {
+                $link = isset($attr['link']) && 'file' == $attr['link'] ? wp_get_attachment_link($id, $size, false, false) : wp_get_attachment_link($id, $size, true, false);
 
-            $output .= "<{$itemtag} class='gallery-item'>";
-            $output .= "
-                <{$icontag} class='gallery-icon'>
-                    $link
-                </{$icontag}>";
-            if ( $captiontag && trim($attachment->post_excerpt) ) {
+                $output .= "<{$itemtag} class='gallery-item'>";
                 $output .= "
-                    <{$captiontag} class='wp-caption-text gallery-caption'>
-                    " . wptexturize($attachment->post_excerpt) . "
-                    </{$captiontag}>";
+                    <{$icontag} class='gallery-icon'>
+                        $link
+                    </{$icontag}>";
+                if ( $captiontag && trim($attachment->post_excerpt) ) {
+                    $output .= "
+                        <{$captiontag} class='wp-caption-text gallery-caption'>
+                        " . wptexturize($attachment->post_excerpt) . "
+                        </{$captiontag}>";
+                }
+                $output .= "</{$itemtag}>";
+                if ( $columns > 0 && ++$i % $columns == 0 )
+                    $output .= '<br style="clear: both" />';
             }
-            $output .= "</{$itemtag}>";
-            if ( $columns > 0 && ++$i % $columns == 0 )
-                $output .= '<br style="clear: both" />';
-        }
 
-        $output .= "
-                <br style='clear: both;' />
-            </div>\n";
+            $output .= "
+                    <br style='clear: both;' />
+                </div>\n";
+        } else {
+            $output = gallery_shortcode($attr);
+        }
 
         return $output;
     }
@@ -555,4 +561,5 @@ class Media_Categories {
 }
 
 global $mc_media_categories;
+
 $mc_media_categories = new Media_Categories('category');
