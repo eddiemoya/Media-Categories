@@ -267,10 +267,9 @@ class Media_Categories {
         $tax_query = array();
 
         foreach($mc_tax_list as $mc_tax => $nothing){
-
-            $tax_query['tax_query']['relation'] = 'OR';
        
             if(!empty(${$mc_tax})){
+                $tax_query['tax_query']['relation'] = 'OR';
 
                 //Split the categories on commas into an array of categories
                 $terms = explode(',',${$mc_tax});
