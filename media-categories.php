@@ -62,7 +62,7 @@ class Media_Categories {
         add_filter( 'posts_clauses', array(&$this, 'query_order_by_taxonomy'), 10, 2 );
 
         //Query Attachments
-        add_filter('ajax_query_attachments_args', array(__CLASS__, 'query_attachments'));
+        add_filter('ajax_query_attachments_args', array($this, 'query_attachments'));
 
         // In < 3.5 this is used for the main metabox on media admin pages - because normal metaboxes were not available
         // In 3.5 > This is used soley for the Media Modal right rail. Where there is also no normal metabox availability
@@ -72,11 +72,11 @@ class Media_Categories {
         if( $wp_version < 3.5 ){
 
             // Patch to solve this in 3.5 was accepted @see http://core.trac.wordpress.org/ticket/20765
-            add_filter('attachment_fields_to_edit', array(__CLASS__, 'get_attachment_fields_to_edit'), 11, 2);
+            add_filter('attachment_fields_to_edit', array($this, 'get_attachment_fields_to_edit'), 11, 2);
 
             // Loading these in this fashion no longer applies in 3.5 because of new built-in support for taxonomy metaboxes on the editor page.
-            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
-            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_media_categories_scripts'));
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_media_categories_styles') );
 
         } else {
 
@@ -85,11 +85,11 @@ class Media_Categories {
             add_action('restrict_manage_posts',array($this, 'restrict_manage_attachments'));
             add_filter( 'manage_upload_sortable_columns', array($this, 'sortable_columns') );
 
-            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_scripts'));
-            add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_media_categories_styles') );
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_media_categories_scripts'));
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_media_categories_styles') );
 
-            // add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_scripts'));
-            // add_action('wp_enqueue_media', array(__CLASS__, 'enqueue_media_categories_styles') );
+            // add_action('wp_enqueue_media', array($this, 'enqueue_media_categories_scripts'));
+            // add_action('wp_enqueue_media', array($this, 'enqueue_media_categories_styles') );
         }
     }
 
